@@ -1,7 +1,7 @@
 class Product < ApplicationRecord
   belongs_to :category
   belongs_to :provider
-  has_many :batches, dependent: :destroy
+  belongs_to :batch, optional: true
   has_many :order_items
 
   # Active Storage para imágenes
@@ -13,10 +13,21 @@ class Product < ApplicationRecord
                   uniqueness: { case_sensitive: false, message: "Este SKU ya existe" }
   validates :price, presence: { message: "El precio es obligatorio" },
                     numericality: { greater_than: 0, message: "El precio debe ser mayor a 0" }
+  validates :stock, numericality: { greater_than_or_equal_to: 0, message: "El stock no puede ser negativo" }
 
-  # Lógica del stock total (suma de lotes)
-  def total_stock
-    batches.sum(:quantity)
+  # Verificar si está agotado (sin stock)
+  def out_of_stock?
+    stock <= 0
+  end
+
+  # Verificar si el lote está vencido
+  def batch_expired?
+    batch&.expired?
+  end
+
+  # No disponible para venta (agotado O lote vencido)
+  def unavailable_for_sale?
+    out_of_stock? || batch_expired?
   end
 
   # URL de imagen o placeholder
@@ -30,3 +41,4 @@ class Product < ApplicationRecord
     end
   end
 end
+

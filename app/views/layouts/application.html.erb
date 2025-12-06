@@ -24,8 +24,9 @@
   <body>
     <nav class="navbar">
       <div class="navbar-container">
-        <a href="<%= root_path %>" class="navbar-brand">
-          🥛 Gloria Lácteos
+        <a href="<%= root_path %>" class="navbar-brand" style="display: flex; align-items: center; gap: 8px;">
+          <img src="<%= asset_path 'logo_gloria.webp' %>" alt="Gloria" style="height: 35px; width: auto;">
+          Gloria Lácteos
         </a>
         
         <ul class="navbar-nav">
@@ -84,7 +85,7 @@
     </main>
 
     <footer class="footer">
-      <p>🥛 Gloria Lácteos © <%= Time.current.year %> - Productos lácteos de calidad</p>
+      <p><img src="<%= asset_path 'logo_gloria.webp' %>" alt="Gloria" style="height: 25px; width: auto; vertical-align: middle;"> Gloria Lácteos © <%= Time.current.year %> - Productos lácteos de calidad</p>
       <p>Hecho con ❤️ en Perú</p>
     </footer>
   </body>

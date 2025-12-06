@@ -53,12 +53,31 @@ class CartsController < ApplicationController
       return
     end
 
-    # Simulación de compra - Solo mostrar mensaje y limpiar carrito
-    # A futuro se implementará la compra real
+    # Verificar stock disponible y reducir
+    cart.each do |product_id, quantity|
+      product = Product.find_by(id: product_id)
+      if product
+        if product.stock < quantity
+          flash[:alert] = "No hay suficiente stock de #{product.name}. Disponible: #{product.stock}"
+          redirect_to cart_path
+          return
+        end
+      end
+    end
+
+    # Reducir stock de cada producto
+    cart.each do |product_id, quantity|
+      product = Product.find_by(id: product_id)
+      if product
+        product.update(stock: product.stock - quantity)
+      end
+    end
+
     total = calculate_total
     
-    # Limpiar carrito
+    # Limpiar carrito de sesión y base de datos
     session[:cart] = {}
+    current_user.cart_items.destroy_all
     
     # Redirigir con parámetro para mostrar popup
     redirect_to root_path(purchased: true, total: total)

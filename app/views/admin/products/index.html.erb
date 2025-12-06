@@ -54,7 +54,9 @@
             <td><%= product.category&.name %></td>
             <td><%= product.provider&.name %></td>
             <td>S/ <%= number_with_precision(product.price, precision: 2) %></td>
-            <td><%= product.total_stock %></td>
+            <td style="<%= 'color: var(--gloria-danger); font-weight: bold;' if product.out_of_stock? %>">
+              <%= product.stock %><%= ' ❌' if product.out_of_stock? %>
+            </td>
             <td class="table-actions">
               <a href="<%= admin_product_path(product) %>" class="btn btn-secondary btn-sm" title="Ver producto y lotes">👁️</a>
               <a href="<%= edit_admin_product_path(product) %>" class="btn btn-primary btn-sm">✏️</a>

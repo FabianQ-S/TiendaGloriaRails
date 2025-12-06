@@ -19,6 +19,15 @@
         <div class="cart-item-info">
           <h4 class="cart-item-title"><%= item[:product].name %></h4>
           <p class="cart-item-price">S/ <%= number_with_precision(item[:product].price, precision: 2) %> c/u</p>
+          <p style="font-size: 0.8rem; margin: 4px 0 0 0; color: <%= item[:quantity] > item[:product].stock ? 'var(--gloria-danger)' : 'var(--gloria-success)' %>;">
+            <% if item[:product].unavailable_for_sale? %>
+              ⚠️ No disponible
+            <% elsif item[:quantity] > item[:product].stock %>
+              ⚠️ Stock insuficiente (<%= item[:product].stock %> disponibles)
+            <% else %>
+              📦 <%= item[:product].stock %> disponibles
+            <% end %>
+          </p>
         </div>
         
         <div class="cart-item-quantity" style="display: flex; align-items: center; gap: 8px;">

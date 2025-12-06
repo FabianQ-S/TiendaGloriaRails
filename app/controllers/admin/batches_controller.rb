@@ -2,7 +2,7 @@ class Admin::BatchesController < Admin::BaseController
   before_action :set_batch, only: [:show, :edit, :update, :destroy]
 
   def index
-    @batches = Batch.includes(:product).order(expiration_date: :asc)
+    @batches = Batch.order(expiration_date: :asc)
   end
 
   def show
@@ -10,8 +10,6 @@ class Admin::BatchesController < Admin::BaseController
 
   def new
     @batch = Batch.new
-    # Pre-select product if coming from product page
-    @batch.product_id = params[:product_id] if params[:product_id].present?
   end
 
   def edit
@@ -21,12 +19,7 @@ class Admin::BatchesController < Admin::BaseController
     @batch = Batch.new(batch_params)
 
     if @batch.save
-      # Redirect to product page if came from there
-      if params[:batch][:return_to_product] == "1"
-        redirect_to admin_product_path(@batch.product), notice: "✅ Lote creado correctamente"
-      else
-        redirect_to admin_batches_path, notice: "✅ Lote creado correctamente"
-      end
+      redirect_to admin_batches_path, notice: "✅ Lote creado correctamente"
     else
       render :new, status: :unprocessable_entity
     end
@@ -41,8 +34,25 @@ class Admin::BatchesController < Admin::BaseController
   end
 
   def destroy
-    @batch.destroy
-    redirect_to admin_batches_path, notice: "Lote eliminado"
+    if @batch.products.any?
+      if @batch.expired?
+        # Lote vencido con productos - pedir confirmación
+        if params[:confirm_expired] == "1"
+          products_count = @batch.products.count
+          @batch.products.destroy_all
+          @batch.destroy
+          redirect_to admin_batches_path, notice: "Lote vencido y #{products_count} productos eliminados"
+        else
+          redirect_to admin_batches_path(delete_error: "batch_expired_with_products", name: @batch.batch_number, batch_id: @batch.id, count: @batch.products.count)
+        end
+      else
+        # Lote vigente con productos - no permitir
+        redirect_to admin_batches_path(delete_error: "batch_with_products", name: @batch.batch_number, count: @batch.products.count)
+      end
+    else
+      @batch.destroy
+      redirect_to admin_batches_path, notice: "Lote eliminado"
+    end
   end
 
   private
@@ -52,6 +62,6 @@ class Admin::BatchesController < Admin::BaseController
   end
 
   def batch_params
-    params.require(:batch).permit(:product_id, :batch_number, :expiration_date, :quantity)
+    params.require(:batch).permit(:batch_number, :expiration_date, :quantity)
   end
 end

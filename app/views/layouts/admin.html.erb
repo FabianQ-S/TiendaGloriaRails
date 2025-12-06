@@ -14,8 +14,9 @@
     <div class="admin-layout">
       <aside class="admin-sidebar">
         <div class="admin-sidebar-brand">
-          <a href="<%= admin_dashboard_path %>">
-            🥛 Gloria Admin
+          <a href="<%= admin_dashboard_path %>" style="display: flex; align-items: center; gap: 8px;">
+            <img src="<%= asset_path 'logo_gloria.webp' %>" alt="Gloria" style="height: 30px; width: auto; filter: brightness(0) invert(1);">
+            Gloria Admin
           </a>
         </div>
         
@@ -55,11 +56,7 @@
               👥 Usuarios
             </a>
           </li>
-          <li class="admin-nav-item">
-            <a href="<%= admin_roles_path %>" class="admin-nav-link <%= 'active' if controller_name == 'roles' %>">
-              🔐 Roles
-            </a>
-          </li>
+          <%# Roles ocultado - solo Admin y Cliente permitidos %>
         </ul>
         
         <ul class="admin-nav" style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">

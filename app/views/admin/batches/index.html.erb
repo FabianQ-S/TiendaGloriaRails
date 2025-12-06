@@ -1,3 +1,24 @@
+<% if params[:delete_error] == "batch_with_products" %>
+<script>
+  window.onload = function() {
+    alert("⚠️ IMPOSIBLE ELIMINAR ⚠️\n\nEl lote '<%= params[:name] %>' tiene <%= params[:count] %> producto(s) relacionado(s).\n\nNo se puede eliminar un lote vigente con productos.");
+  };
+</script>
+<% elsif params[:delete_error] == "batch_expired_with_products" %>
+<form id="delete-expired-form" action="<%= admin_batch_path(params[:batch_id]) %>" method="post" style="display: none;">
+  <input type="hidden" name="_method" value="delete">
+  <input type="hidden" name="confirm_expired" value="1">
+  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+</form>
+<script>
+  window.onload = function() {
+    if (confirm("⚠️ LOTE VENCIDO ⚠️\n\nEl lote '<%= params[:name] %>' tiene <%= params[:count] %> producto(s) relacionado(s).\n\n¿Desea eliminar el lote VENCIDO junto con todos sus productos?")) {
+      document.getElementById('delete-expired-form').submit();
+    }
+  };
+</script>
+<% end %>
+
 <div class="admin-header">
   <h1 class="admin-title">📋 Lotes</h1>
   <a href="<%= new_admin_batch_path %>" class="btn btn-success">➕ Nuevo Lote</a>
@@ -8,41 +29,39 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Producto</th>
           <th>Nº Lote</th>
           <th>Cantidad</th>
           <th>Vencimiento</th>
           <th>Estado</th>
+          <th>Productos</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <% @batches.each do |batch| %>
           <tr>
-            <td>
-              <% if batch.product %>
-                <a href="<%= admin_product_path(batch.product) %>" style="color: var(--gloria-blue-dark); text-decoration: underline;">
-                  <%= batch.product.name %>
-                </a>
-              <% else %>
-                -
-              <% end %>
-            </td>
-            <td><%= batch.batch_number %></td>
+            <td><strong><%= batch.batch_number %></strong></td>
             <td><%= batch.quantity %></td>
             <td><%= batch.expiration_date&.strftime("%d/%m/%Y") %></td>
             <td>
-              <% if batch.expiration_date && batch.expiration_date < Date.current %>
+              <% if batch.expired? %>
                 <span style="color: var(--gloria-danger);">⚠️ Vencido</span>
-              <% elsif batch.expiration_date && batch.expiration_date < Date.current + 7.days %>
+              <% elsif batch.expiring_soon? %>
                 <span style="color: var(--gloria-warning);">⚡ Por vencer</span>
               <% else %>
                 <span style="color: var(--gloria-success);">✓ Vigente</span>
               <% end %>
             </td>
+            <td>
+              <% if batch.products.any? %>
+                <span style="color: var(--gloria-blue-dark);"><%= batch.products.count %> producto(s)</span>
+              <% else %>
+                <span style="color: #999;">Sin productos</span>
+              <% end %>
+            </td>
             <td class="table-actions">
               <a href="<%= edit_admin_batch_path(batch) %>" class="btn btn-primary btn-sm">✏️</a>
-              <%= button_to "🗑️", admin_batch_path(batch), method: :delete, class: "btn btn-danger btn-sm", data: { confirm: "¿Eliminar este lote?" } %>
+              <%= button_to "🗑️", admin_batch_path(batch), method: :delete, class: "btn btn-danger btn-sm", data: { turbo: false, confirm: "¿Eliminar este lote?" } %>
             </td>
           </tr>
         <% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_06_153053) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_06_180241) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -60,6 +60,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_153053) do
     t.index ["product_id"], name: "index_batches_on_product_id"
   end
 
+  create_table "cart_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "product_id", null: false
+    t.integer "quantity"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["product_id"], name: "index_cart_items_on_product_id"
+    t.index ["user_id"], name: "index_cart_items_on_user_id"
+  end
+
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -92,6 +102,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_153053) do
   end
 
   create_table "products", force: :cascade do |t|
+    t.integer "batch_id"
     t.integer "category_id", null: false
     t.datetime "created_at", null: false
     t.text "description"
@@ -101,7 +112,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_153053) do
     t.decimal "price"
     t.integer "provider_id", null: false
     t.string "sku"
+    t.integer "stock", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["batch_id"], name: "index_products_on_batch_id"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["provider_id"], name: "index_products_on_provider_id"
   end
@@ -134,10 +147,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_153053) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "users"
   add_foreign_key "batches", "products"
+  add_foreign_key "cart_items", "products"
+  add_foreign_key "cart_items", "users"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "addresses"
   add_foreign_key "orders", "users"
+  add_foreign_key "products", "batches"
   add_foreign_key "products", "categories"
   add_foreign_key "products", "providers"
   add_foreign_key "users", "roles"

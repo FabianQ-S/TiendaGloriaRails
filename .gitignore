@@ -33,6 +33,7 @@
 # Ignore documentation folder content (except specific files kept locally)
 /docs/*
 !/docs/GUIA_USUARIO.md
+!/docs/GUIA_DEVELOPER.md
 !/docs/database_schema.dbml
 
 # Ignore key files for decrypting credentials and more.

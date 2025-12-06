@@ -1,99 +1,134 @@
-// Gloria Lácteos - Database Schema (DBML)
-// https://dbml.dbdiagram.io/
+# Gloria Lácteos - Database Schema
+# Diagrama DBML actualizado - Diciembre 2025
 
-Project GloriaLacteos {
+Project gloria_lacteos {
   database_type: 'SQLite'
-  Note: 'E-commerce de productos lácteos Gloria'
+  Note: 'E-commerce de productos lácteos Gloria - Ruby on Rails 8.1'
 }
 
-// ============ AUTHENTICATION & USERS ============
+# ============================================
+# TABLAS DE USUARIOS Y AUTENTICACIÓN
+# ============================================
 
 Table roles {
   id integer [pk, increment]
-  name varchar [not null, unique, note: 'Admin, Cliente']
-  created_at datetime
-  updated_at datetime
+  name varchar [note: 'Admin o Cliente']
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  
+  Note: 'Solo dos roles: Admin y Cliente'
 }
 
 Table users {
   id integer [pk, increment]
+  name varchar
+  email varchar [unique]
+  password_digest varchar [note: 'bcrypt hash']
   role_id integer [not null, ref: > roles.id]
-  name varchar [not null]
-  email varchar [not null, unique]
-  password_digest varchar [not null, note: 'bcrypt encrypted']
   active boolean [default: true]
-  created_at datetime
-  updated_at datetime
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  
+  Note: 'Usuarios del sistema con autenticación bcrypt'
 }
 
 Table addresses {
   id integer [pk, increment]
   user_id integer [not null, ref: > users.id]
-  name varchar [not null, note: 'Casa, Trabajo, etc.']
-  street varchar [not null]
-  city varchar [not null]
+  name varchar [note: 'Nombre de la dirección (Casa, Trabajo, etc)']
+  street varchar
   district varchar
-  created_at datetime
-  updated_at datetime
+  city varchar
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  
+  Note: 'Direcciones de entrega de los usuarios'
 }
 
-// ============ PRODUCTS & INVENTORY ============
-
-Table providers {
-  id integer [pk, increment]
-  name varchar [not null]
-  contact_email varchar
-  created_at datetime
-  updated_at datetime
-}
+# ============================================
+# TABLAS DE PRODUCTOS
+# ============================================
 
 Table categories {
   id integer [pk, increment]
-  name varchar [not null]
-  parent_id integer [ref: > categories.id, note: 'Self-reference for subcategories']
-  created_at datetime
-  updated_at datetime
+  name varchar
+  parent_id integer [ref: > categories.id, note: 'Subcategorías']
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  
+  Note: 'Categorías jerárquicas de productos'
 }
 
-Table products {
+Table providers {
   id integer [pk, increment]
-  sku varchar [not null, unique]
-  name varchar [not null]
-  description text
-  price decimal [not null, note: 'Price in Soles (S/)']
-  image_url varchar [note: 'URL externa (legacy)']
-  category_id integer [not null, ref: > categories.id]
-  provider_id integer [not null, ref: > providers.id]
-  is_perishable boolean [default: false]
-  created_at datetime
-  updated_at datetime
+  name varchar
+  contact_email varchar
+  created_at datetime [not null]
+  updated_at datetime [not null]
   
-  Note: 'También tiene Active Storage attachment para imágenes'
+  Note: 'Proveedores de productos'
 }
 
 Table batches {
   id integer [pk, increment]
-  product_id integer [not null, ref: > products.id]
-  batch_number varchar [not null]
-  expiration_date date [not null]
-  quantity integer [not null, default: 0]
-  created_at datetime
-  updated_at datetime
+  batch_number varchar [unique, note: 'Número de lote único']
+  quantity integer [note: 'Cantidad en el lote']
+  expiration_date date [not null, note: 'Fecha de vencimiento']
+  product_id integer [not null, ref: > products.id, note: 'Legacy - no usado']
+  created_at datetime [not null]
+  updated_at datetime [not null]
   
-  Note: 'Control de lotes y fechas de vencimiento'
+  Note: 'Lotes de productos con fecha de vencimiento. Un lote puede tener varios productos.'
 }
 
-// ============ ORDERS ============
+Table products {
+  id integer [pk, increment]
+  sku varchar [unique, not null]
+  name varchar [not null]
+  description text
+  price decimal [not null]
+  stock integer [not null, default: 0, note: '0 = Agotado']
+  image_url varchar [note: 'URL externa de imagen']
+  is_perishable boolean [default: false]
+  category_id integer [not null, ref: > categories.id]
+  provider_id integer [not null, ref: > providers.id]
+  batch_id integer [ref: > batches.id, note: 'Lote al que pertenece (opcional)']
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  
+  Note: 'Productos de la tienda. Si batch_id apunta a un lote vencido, el producto no se puede vender.'
+}
+
+# ============================================
+# TABLAS DE CARRITO Y ÓRDENES
+# ============================================
+
+Table cart_items {
+  id integer [pk, increment]
+  user_id integer [not null, ref: > users.id]
+  product_id integer [not null, ref: > products.id]
+  quantity integer [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  
+  indexes {
+    (user_id, product_id) [unique]
+  }
+  
+  Note: 'Items del carrito persistente. Se guarda al cerrar sesión y se recupera al iniciar.'
+}
 
 Table orders {
   id integer [pk, increment]
-  order_number varchar [not null, unique, note: 'ORD-YYYYMMDD-XXXX']
   user_id integer [not null, ref: > users.id]
-  address_id integer [ref: > addresses.id, note: 'Optional']
-  status varchar [not null, note: 'pendiente, pagado, enviado, entregado, cancelado']
+  address_id integer [not null, ref: > addresses.id]
+  order_number varchar
+  status varchar [note: 'pendiente, procesando, enviado, entregado, cancelado']
   total decimal
-  created_at datetime
-  updated_at datetime
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  
+  Note: 'Órdenes de compra de los usuarios'
 }
 
 Table order_items {
@@ -101,44 +136,46 @@ Table order_items {
   order_id integer [not null, ref: > orders.id]
   product_id integer [not null, ref: > products.id]
   quantity integer [not null]
-  price decimal [not null, note: 'Precio al momento de la compra']
-  created_at datetime
-  updated_at datetime
+  price decimal [note: 'Precio al momento de la compra']
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  
+  Note: 'Items individuales de cada orden'
 }
 
-// ============ ACTIVE STORAGE (Rails) ============
+# ============================================
+# TABLAS DE ACTIVE STORAGE (Rails)
+# ============================================
 
 Table active_storage_blobs {
   id integer [pk, increment]
-  key varchar [not null, unique]
+  key varchar [unique, not null]
   filename varchar [not null]
   content_type varchar
   metadata text
   service_name varchar [not null]
   byte_size bigint [not null]
   checksum varchar
-  created_at datetime
+  created_at datetime [not null]
+  
+  Note: 'Archivos almacenados por Active Storage'
 }
 
 Table active_storage_attachments {
   id integer [pk, increment]
   name varchar [not null]
   record_type varchar [not null]
-  record_id integer [not null]
-  blob_id integer [not null, ref: > active_storage_blobs.id]
-  created_at datetime
+  record_id bigint [not null]
+  blob_id bigint [not null, ref: > active_storage_blobs.id]
+  created_at datetime [not null]
   
-  indexes {
-    (record_type, record_id, name, blob_id) [unique]
-  }
+  Note: 'Relación polimórfica entre archivos y modelos'
 }
 
 Table active_storage_variant_records {
   id integer [pk, increment]
-  blob_id integer [not null, ref: > active_storage_blobs.id]
+  blob_id bigint [not null, ref: > active_storage_blobs.id]
   variation_digest varchar [not null]
   
-  indexes {
-    (blob_id, variation_digest) [unique]
-  }
+  Note: 'Variantes de imágenes (thumbnails, etc)'
 }
