@@ -34,24 +34,35 @@ class Admin::BatchesController < Admin::BaseController
   end
 
   def destroy
-    if @batch.products.any?
-      if @batch.expired?
-        # Lote vencido con productos - pedir confirmación
-        if params[:confirm_expired] == "1"
-          products_count = @batch.products.count
-          @batch.products.destroy_all
-          @batch.destroy
-          redirect_to admin_batches_path, notice: "Lote vencido y #{products_count} productos eliminados"
+    begin
+      if @batch.products.any?
+        if @batch.expired?
+          # Lote vencido con productos - pedir confirmación
+          if params[:confirm_expired] == "1"
+            products_count = @batch.products.count
+            product_names = @batch.products.pluck(:name)
+            
+            # Eliminar productos del lote (junto con sus dependencias)
+            @batch.products.each do |product|
+              product.destroy
+            end
+            
+            # Ahora eliminar el lote
+            @batch.destroy
+            redirect_to admin_batches_path, notice: "✅ Lote vencido y #{products_count} productos eliminados: #{product_names.join(', ')}"
+          else
+            redirect_to admin_batches_path(delete_error: "batch_expired_with_products", name: @batch.batch_number, batch_id: @batch.id, count: @batch.products.count)
+          end
         else
-          redirect_to admin_batches_path(delete_error: "batch_expired_with_products", name: @batch.batch_number, batch_id: @batch.id, count: @batch.products.count)
+          # Lote vigente con productos - no permitir
+          redirect_to admin_batches_path(delete_error: "batch_with_products", name: @batch.batch_number, count: @batch.products.count)
         end
       else
-        # Lote vigente con productos - no permitir
-        redirect_to admin_batches_path(delete_error: "batch_with_products", name: @batch.batch_number, count: @batch.products.count)
+        @batch.destroy
+        redirect_to admin_batches_path, notice: "Lote eliminado"
       end
-    else
-      @batch.destroy
-      redirect_to admin_batches_path, notice: "Lote eliminado"
+    rescue ActiveRecord::InvalidForeignKey => e
+      redirect_to admin_batches_path(delete_error: "batch_has_references", name: @batch.batch_number)
     end
   end
 

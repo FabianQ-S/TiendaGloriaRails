@@ -2,7 +2,8 @@ class Product < ApplicationRecord
   belongs_to :category
   belongs_to :provider
   belongs_to :batch, optional: true
-  has_many :order_items
+  has_many :order_items, dependent: :destroy
+  has_many :cart_items, dependent: :destroy
 
   # Active Storage para imágenes
   has_one_attached :image

@@ -37,8 +37,19 @@ Gloria Lácteos es una tienda online de productos lácteos donde puedes comprar 
 
 ### Finalizar compra
 1. En el carrito, haz clic en **"🎉 Comprar ahora"**
-2. Aparecerá un mensaje confirmando tu compra
+2. Aparecerá un mensaje confirmando tu compra con el **número de orden**
 3. El stock de los productos se actualizará automáticamente
+4. Tu orden quedará registrada con estado **"Pendiente"**
+
+---
+
+## 📦 Estados de tu Pedido
+
+| Estado | Icono | Significado |
+|--------|-------|-------------|
+| Pendiente | ⏳ | Orden recibida, en espera de procesamiento |
+| Enviado | 🚚 | Tu pedido está en camino |
+| Entregado | ✅ | Pedido completado exitosamente |
 
 ---
 
@@ -71,5 +82,5 @@ Si cierras sesión, tu carrito se guarda automáticamente. Cuando vuelvas a inic
 
 ## 📞 Contacto
 
-Gloria Lácteos - Tienda Online
+Gloria Lácteos - Tienda Online  
 Hecho con ❤️ en Perú

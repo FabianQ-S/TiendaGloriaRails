@@ -53,7 +53,7 @@ class CartsController < ApplicationController
       return
     end
 
-    # Verificar stock disponible y reducir
+    # Verificar stock disponible
     cart.each do |product_id, quantity|
       product = Product.find_by(id: product_id)
       if product
@@ -65,22 +65,39 @@ class CartsController < ApplicationController
       end
     end
 
-    # Reducir stock de cada producto
-    cart.each do |product_id, quantity|
-      product = Product.find_by(id: product_id)
-      if product
-        product.update(stock: product.stock - quantity)
-      end
-    end
-
+    # Crear la orden
     total = calculate_total
-    
-    # Limpiar carrito de sesión y base de datos
-    session[:cart] = {}
-    current_user.cart_items.destroy_all
-    
-    # Redirigir con parámetro para mostrar popup
-    redirect_to root_path(purchased: true, total: total)
+    order = current_user.orders.build(
+      total: total,
+      status: 'pendiente'
+    )
+
+    if order.save
+      # Crear items de la orden y reducir stock
+      cart.each do |product_id, quantity|
+        product = Product.find_by(id: product_id)
+        if product
+          # Crear order item
+          order.order_items.create!(
+            product: product,
+            quantity: quantity,
+            price: product.price
+          )
+          # Reducir stock
+          product.update(stock: product.stock - quantity)
+        end
+      end
+
+      # Limpiar carrito de sesión y base de datos
+      session[:cart] = {}
+      current_user.cart_items.destroy_all
+      
+      # Redirigir con parámetro para mostrar popup
+      redirect_to root_path(purchased: true, total: total, order: order.order_number)
+    else
+      flash[:alert] = "Error al procesar el pedido"
+      redirect_to cart_path
+    end
   end
 
   private

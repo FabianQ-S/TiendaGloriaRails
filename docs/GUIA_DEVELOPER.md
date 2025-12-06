@@ -46,45 +46,65 @@ app/
 │   │   ├── products_controller.rb
 │   │   ├── categories_controller.rb
 │   │   ├── providers_controller.rb
-│   │   └── batches_controller.rb
-│   ├── sessions_controller.rb     # Login/logout
-│   ├── registrations_controller.rb # Registro
-│   ├── carts_controller.rb        # Carrito de compras
-│   ├── store_controller.rb        # Tienda pública
-│   └── profile_controller.rb      # Perfil de usuario
+│   │   ├── batches_controller.rb
+│   │   └── orders_controller.rb    # Gestión de órdenes
+│   ├── sessions_controller.rb
+│   ├── registrations_controller.rb
+│   ├── carts_controller.rb         # Carrito y checkout
+│   ├── store_controller.rb
+│   └── profile_controller.rb
 ├── models/
 │   ├── user.rb            # has_many :cart_items, :orders
-│   ├── product.rb         # belongs_to :batch (opcional), :category, :provider
+│   ├── product.rb         # belongs_to :batch, :category, :provider
 │   ├── batch.rb           # has_many :products
-│   ├── category.rb        # has_many :products
-│   ├── provider.rb        # has_many :products
+│   ├── order.rb           # has_many :order_items (3 estados)
+│   ├── order_item.rb      # belongs_to :order, :product
 │   ├── cart_item.rb       # Carrito persistente
-│   └── order.rb / order_item.rb
+│   └── ...
 └── views/
     ├── layouts/
-    │   ├── application.html.erb  # Layout tienda
-    │   └── admin.html.erb        # Layout admin
-    ├── store/                    # Vista de tienda
-    ├── carts/                    # Vista del carrito
-    └── admin/                    # Vistas del admin
+    ├── store/
+    ├── carts/
+    └── admin/
+        └── orders/         # Vista de órdenes
 ```
 
 ---
 
 ## 🗄️ Modelos y Relaciones
 
+### Order (Sistema de Órdenes)
+```ruby
+belongs_to :user
+belongs_to :address, optional: true
+has_many :order_items, dependent: :destroy
+
+# Estados posibles
+STATUSES = {
+  'pendiente' => { label: 'Pendiente', color: 'gray', icon: '⏳' },
+  'enviado' => { label: 'Enviado', color: 'green', icon: '🚚' },
+  'entregado' => { label: 'Entregado', color: 'blue', icon: '✅' }
+}
+
+# Methods
+def status_label   # Etiqueta legible
+def status_color   # Color CSS
+def status_icon    # Emoji
+```
+
 ### Product
 ```ruby
 belongs_to :category
 belongs_to :provider
-belongs_to :batch, optional: true  # Puede no tener lote
-has_many :order_items
+belongs_to :batch, optional: true
+has_many :order_items, dependent: :destroy
+has_many :cart_items, dependent: :destroy
 
-# Campos importantes
+# Campos
 # - stock: integer (0 = agotado)
-# - batch_id: integer (si el lote está vencido, producto no disponible)
+# - batch_id: integer (lote vencido = no disponible)
 
-# Métodos clave
+# Methods
 def out_of_stock?           # stock <= 0
 def batch_expired?          # batch&.expired?
 def unavailable_for_sale?   # agotado O lote vencido
@@ -94,68 +114,34 @@ def unavailable_for_sale?   # agotado O lote vencido
 ```ruby
 has_many :products
 
-# Campos
-# - batch_number: string (único)
-# - quantity: integer
-# - expiration_date: date
-
-# Métodos
+# Methods
 def expired?        # expiration_date < Date.current
 def expiring_soon?  # vence en menos de 7 días
 ```
 
-### CartItem (Carrito Persistente)
-```ruby
-belongs_to :user
-belongs_to :product
+---
 
-# Se guarda al hacer logout
-# Se carga al hacer login
+## 🛒 Flujo de Compra (Checkout)
+
 ```
-
----
-
-## 🔐 Autenticación
-
-- Usa `has_secure_password` (bcrypt)
-- Sesiones almacenadas en cookies
-- Helper methods en `ApplicationController`:
-  - `current_user`
-  - `logged_in?`
-  - `admin?`
-
----
-
-## 🛒 Flujo del Carrito
-
-1. **Agregar producto** → `CartsController#add`
-2. **Ver carrito** → `CartsController#show`
-3. **Modificar cantidad** → `CartsController#update_quantity` (➕➖)
-4. **Checkout** → `CartsController#checkout`
-   - Valida stock disponible
-   - Reduce stock de cada producto
+1. Cliente agrega productos al carrito
+   ↓
+2. CartsController#add → session[:cart]
+   ↓
+3. Cliente hace checkout
+   ↓
+4. CartsController#checkout:
+   - Verifica stock disponible
+   - Crea Order (status: 'pendiente')
+   - Crea OrderItems para cada producto
+   - Reduce stock de productos
    - Limpia carrito (sesión + BD)
-   - Muestra popup de confirmación
-
-### Carrito Persistente
-- Al **logout**: `save_cart_to_database(user)`
-- Al **login**: `load_cart_from_database(user)`
-
----
-
-## 🛡️ Validaciones Importantes
-
-### Eliminación de Lotes
-- **Con productos + vigente** → ❌ No permite
-- **Con productos + vencido** → ⚠️ Pide confirmación, elimina lote y productos
-
-### Eliminación de Proveedores/Categorías
-- **Con productos** → ❌ No permite (popup de error)
-
-### Productos no disponibles para venta
-- Stock = 0 → Agotado
-- Lote vencido → Vencido
-- Ambos muestran tarjeta gris en tienda
+   - Redirige con número de orden
+   ↓
+5. Admin ve orden en /admin/orders
+   ↓
+6. Admin cambia estado: pendiente → enviado → entregado
+```
 
 ---
 
@@ -163,14 +149,33 @@ belongs_to :product
 
 **URL:** `/admin`
 
-### Funcionalidades
-- Dashboard con estadísticas
-- CRUD Productos (con selector de lote y stock)
+### Órdenes (`/admin/orders`)
+- Lista de todas las órdenes con cliente, productos, total
+- Estados con colores: ⏳ Pendiente (gris), 🚚 Enviado (verde), ✅ Entregado (azul)
+- Botones para cambiar estado rápidamente
+
+### Otras funcionalidades
+- CRUD Productos (con stock y lote)
 - CRUD Categorías
-- CRUD Proveedores  
-- CRUD Lotes
+- CRUD Proveedores
+- CRUD Lotes (validación de eliminación)
 - Ver Usuarios
-- Ver Órdenes
+
+---
+
+## 🛡️ Validaciones Importantes
+
+### Eliminación de Lotes
+- **Vigente con productos** → ❌ No permite
+- **Vencido con productos** → ⚠️ Confirma y elimina lote + productos
+
+### Eliminación de Productos
+- Se eliminan también: order_items, cart_items
+
+### Stock y Disponibilidad
+- Stock = 0 → Producto agotado
+- Lote vencido → Producto no disponible
+- Ambos muestran tarjeta gris en tienda
 
 ---
 
@@ -184,21 +189,21 @@ belongs_to :product
 
 ## 🔮 Ideas para Futuras Mejoras
 
-1. **Direcciones de entrega** - Ya existe el modelo, falta UI
-2. **Órdenes reales** - Actualmente es simulación
-3. **Pasarela de pago** - Integrar con Stripe/PayPal
-4. **Notificaciones** - Email al comprar
+1. **Direcciones de entrega** - Asignar dirección a la orden
+2. **Historial de pedidos** - Vista para clientes
+3. **Pasarela de pago** - Integrar Stripe/PayPal
+4. **Notificaciones email** - Confirmación de compra
 5. **Reportes** - Ventas, productos más vendidos
 6. **API REST** - Para app móvil
-7. **Búsqueda avanzada** - Filtros por precio, proveedor
-8. **Wishlist** - Lista de deseos
+7. **Búsqueda avanzada** - Filtros por precio
+8. **Seguimiento de envío** - Número de tracking
 
 ---
 
-## 📚 Documentación Adicional
+## 📚 Documentación
 
 - [database_schema.dbml](./database_schema.dbml) - Diagrama de base de datos
-- [GUIA_USUARIO.md](./GUIA_USUARIO.md) - Manual para usuarios finales
+- [GUIA_USUARIO.md](./GUIA_USUARIO.md) - Manual para usuarios
 
 ---
 

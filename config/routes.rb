@@ -35,7 +35,11 @@ Rails.application.routes.draw do
     resources :providers
     resources :batches
     resources :users, only: [:index, :show]
-    resources :orders, only: [:index, :show, :update]
+    resources :orders, only: [:index, :show] do
+      member do
+        patch :update_status
+      end
+    end
     resources :roles
   end
 

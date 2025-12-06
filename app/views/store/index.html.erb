@@ -2,7 +2,7 @@
 <script>
   // Vanilla JS popup - runs on page load (Turbo disabled for checkout)
   window.onload = function() {
-    alert("🎉 ¡HAS COMPRADO! 🎉\n\nGracias por tu compra.\nTotal: S/ <%= params[:total] %>\n\n¡Pronto recibirás tus productos Gloria!");
+    alert("🎉 ¡COMPRA EXITOSA! 🎉\n\nOrden: <%= params[:order] %>\nTotal: S/ <%= params[:total] %>\n\n¡Gracias por tu compra!\nPronto recibirás tus productos Gloria.");
   };
 </script>
 <% end %>

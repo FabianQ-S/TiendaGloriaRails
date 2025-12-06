@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_06_180241) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_06_212136) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -54,10 +54,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_180241) do
     t.string "batch_number"
     t.datetime "created_at", null: false
     t.date "expiration_date"
-    t.integer "product_id", null: false
     t.integer "quantity"
     t.datetime "updated_at", null: false
-    t.index ["product_id"], name: "index_batches_on_product_id"
   end
 
   create_table "cart_items", force: :cascade do |t|
@@ -90,7 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_180241) do
   end
 
   create_table "orders", force: :cascade do |t|
-    t.integer "address_id", null: false
+    t.integer "address_id"
     t.datetime "created_at", null: false
     t.string "order_number"
     t.string "status"
@@ -146,7 +144,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_180241) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "users"
-  add_foreign_key "batches", "products"
   add_foreign_key "cart_items", "products"
   add_foreign_key "cart_items", "users"
   add_foreign_key "order_items", "orders"

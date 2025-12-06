@@ -20,8 +20,26 @@
       <p><strong>Categoría:</strong> <%= @product.category&.name %></p>
       <p><strong>Proveedor:</strong> <%= @product.provider&.name %></p>
       <p><strong>Precio:</strong> S/ <%= number_with_precision(@product.price, precision: 2) %></p>
-      <p><strong>Stock Total:</strong> <%= @product.total_stock %> unidades</p>
+      <p>
+        <strong>Stock:</strong> 
+        <span style="color: <%= @product.out_of_stock? ? 'var(--gloria-danger)' : 'var(--gloria-success)' %>; font-weight: bold;">
+          <%= @product.stock %> unidades
+          <%= '❌ AGOTADO' if @product.out_of_stock? %>
+        </span>
+      </p>
       <p><strong>Perecedero:</strong> <%= @product.is_perishable ? "Sí" : "No" %></p>
+      <% if @product.batch %>
+        <p>
+          <strong>Lote:</strong> <%= @product.batch.batch_number %>
+          <% if @product.batch.expired? %>
+            <span style="color: var(--gloria-danger);">⚠️ VENCIDO</span>
+          <% else %>
+            (vence: <%= @product.batch.expiration_date&.strftime("%d/%m/%Y") %>)
+          <% end %>
+        </p>
+      <% else %>
+        <p><strong>Lote:</strong> <em>Sin lote asignado</em></p>
+      <% end %>
       <p><strong>Descripción:</strong></p>
       <p><%= @product.description %></p>
     </div>
@@ -30,47 +48,42 @@
   <div>
     <div class="card">
       <div class="card-body">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h3 style="margin: 0;">📋 Lotes de este Producto</h3>
-          <a href="<%= new_admin_batch_path(product_id: @product.id) %>" class="btn btn-success btn-sm">➕ Nuevo Lote</a>
-        </div>
+        <h3 style="margin: 0 0 1rem 0;">📊 Estado del Producto</h3>
         
-        <% if @product.batches.any? %>
-          <table class="table" style="font-size: 0.9rem;">
-            <thead>
-              <tr>
-                <th>Nº Lote</th>
-                <th>Cantidad</th>
-                <th>Vencimiento</th>
-                <th>Estado</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @product.batches.order(:expiration_date).each do |batch| %>
-                <tr>
-                  <td><%= batch.batch_number %></td>
-                  <td><%= batch.quantity %></td>
-                  <td><%= batch.expiration_date&.strftime("%d/%m/%Y") %></td>
-                  <td>
-                    <% if batch.expiration_date && batch.expiration_date < Date.current %>
-                      <span style="color: var(--gloria-danger);">⚠️ Vencido</span>
-                    <% elsif batch.expiration_date && batch.expiration_date < Date.current + 7.days %>
-                      <span style="color: var(--gloria-warning);">⚡ Por vencer</span>
-                    <% else %>
-                      <span style="color: var(--gloria-success);">✓ OK</span>
-                    <% end %>
-                  </td>
-                  <td>
-                    <a href="<%= edit_admin_batch_path(batch) %>" class="btn btn-primary btn-sm">✏️</a>
-                  </td>
-                </tr>
+        <% if @product.unavailable_for_sale? %>
+          <div style="padding: 1rem; background: #fee; border-radius: 8px; margin-bottom: 1rem;">
+            <p style="margin: 0; color: var(--gloria-danger); font-weight: bold;">
+              <% if @product.batch_expired? %>
+                ⚠️ PRODUCTO NO DISPONIBLE - Lote Vencido
+              <% else %>
+                ❌ PRODUCTO AGOTADO - Sin stock
               <% end %>
-            </tbody>
-          </table>
+            </p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+              Este producto no aparece disponible para compra en la tienda.
+            </p>
+          </div>
         <% else %>
-          <p style="color: #666; text-align: center; padding: 1rem;">No hay lotes registrados para este producto</p>
+          <div style="padding: 1rem; background: #efe; border-radius: 8px; margin-bottom: 1rem;">
+            <p style="margin: 0; color: var(--gloria-success); font-weight: bold;">
+              ✓ DISPONIBLE PARA VENTA
+            </p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+              <%= @product.stock %> unidades en stock
+            </p>
+          </div>
         <% end %>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+          <div style="padding: 1rem; background: var(--gloria-gray-light); border-radius: 8px;">
+            <p style="font-size: 2rem; margin: 0; font-weight: bold;"><%= @product.stock %></p>
+            <p style="margin: 0; color: #666; font-size: 0.85rem;">Stock actual</p>
+          </div>
+          <div style="padding: 1rem; background: var(--gloria-gray-light); border-radius: 8px;">
+            <p style="font-size: 2rem; margin: 0; font-weight: bold;">S/ <%= number_with_precision(@product.price, precision: 2) %></p>
+            <p style="margin: 0; color: #666; font-size: 0.85rem;">Precio unitario</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

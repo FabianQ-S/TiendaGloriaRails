@@ -1,15 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Fixtures para Users
 
-one:
-  role: one
-  name: MyString
-  email: MyString
-  password_digest: MyString
-  active: false
+admin_user:
+  role: admin
+  name: "Admin Test"
+  email: "admin@test.com"
+  password_digest: <%= BCrypt::Password.create('password123') %>
+  active: true
 
-two:
-  role: two
-  name: MyString
-  email: MyString
-  password_digest: MyString
-  active: false
+cliente_user:
+  role: cliente
+  name: "Cliente Test"
+  email: "cliente@test.com"
+  password_digest: <%= BCrypt::Password.create('password123') %>
+  active: true

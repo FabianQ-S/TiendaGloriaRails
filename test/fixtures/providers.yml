@@ -1,9 +1,9 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Fixtures para Providers
 
-one:
-  name: MyString
-  contact_email: MyString
+gloria:
+  name: "Gloria S.A."
+  contact_email: "contacto@gloria.com"
 
-two:
-  name: MyString
-  contact_email: MyString
+laive:
+  name: "Laive S.A."
+  contact_email: "contacto@laive.com"

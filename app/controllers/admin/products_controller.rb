@@ -34,8 +34,12 @@ class Admin::ProductsController < Admin::BaseController
   end
 
   def destroy
-    @product.destroy
-    redirect_to admin_products_path, notice: "Producto eliminado"
+    begin
+      @product.destroy
+      redirect_to admin_products_path, notice: "Producto eliminado"
+    rescue ActiveRecord::InvalidForeignKey
+      redirect_to admin_products_path(delete_error: "product_has_references", name: @product.name)
+    end
   end
 
   private

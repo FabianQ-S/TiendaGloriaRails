@@ -1,21 +1,33 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Fixtures para Products
 
-one:
-  sku: MyString
-  name: MyString
-  description: MyText
-  price: 9.99
-  image_url: MyString
-  category: one
-  provider: one
+leche_entera:
+  sku: "LECHE-TEST-001"
+  name: "Leche de Prueba"
+  description: "Producto de prueba"
+  price: 5.50
+  stock: 100
+  category: leches
+  provider: gloria
+  is_perishable: true
+  batch: lote_vigente
+
+producto_agotado:
+  sku: "AGOTADO-TEST-001"
+  name: "Producto Agotado"
+  description: "Producto sin stock para pruebas"
+  price: 10.00
+  stock: 0
+  category: leches
+  provider: gloria
   is_perishable: false
 
-two:
-  sku: MyString
-  name: MyString
-  description: MyText
-  price: 9.99
-  image_url: MyString
-  category: two
-  provider: two
-  is_perishable: false
+producto_vencido:
+  sku: "VENCIDO-TEST-001"
+  name: "Producto con Lote Vencido"
+  description: "Producto con lote vencido para pruebas"
+  price: 8.00
+  stock: 50
+  category: leches
+  provider: gloria
+  is_perishable: true
+  batch: lote_vencido

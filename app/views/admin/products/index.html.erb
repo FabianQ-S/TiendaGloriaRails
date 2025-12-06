@@ -17,6 +17,12 @@
     }
   };
 </script>
+<% elsif params[:delete_error] == "product_has_references" %>
+<script>
+  window.onload = function() {
+    alert("⚠️ IMPOSIBLE ELIMINAR ⚠️\n\nEl producto '<%= params[:name] %>' tiene registros relacionados (lotes, órdenes, etc).\n\nPrimero elimina los registros relacionados.");
+  };
+</script>
 <% end %>
 
 <div class="admin-header">

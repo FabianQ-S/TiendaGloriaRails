@@ -1,15 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Fixtures para Addresses
 
-one:
-  user: one
-  name: MyString
-  street: MyString
-  city: MyString
-  district: MyString
+casa:
+  user: cliente_user
+  name: "Casa"
+  street: "Av. Test 123"
+  district: "Test District"
+  city: "Lima"
 
-two:
-  user: two
-  name: MyString
-  street: MyString
-  city: MyString
-  district: MyString
+trabajo:
+  user: cliente_user
+  name: "Trabajo"
+  street: "Calle Oficina 456"
+  district: "Miraflores"
+  city: "Lima"

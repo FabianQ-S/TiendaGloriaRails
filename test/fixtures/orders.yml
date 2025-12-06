@@ -1,15 +1,19 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Fixtures para Orders
 
-one:
-  order_number: MyString
-  user: one
-  address: one
-  status: MyString
-  total: 9.99
+orden_pendiente:
+  order_number: "ORD-TEST-001"
+  user: cliente_user
+  status: "pendiente"
+  total: 25.50
 
-two:
-  order_number: MyString
-  user: two
-  address: two
-  status: MyString
-  total: 9.99
+orden_enviada:
+  order_number: "ORD-TEST-002"
+  user: cliente_user
+  status: "enviado"
+  total: 50.00
+
+orden_entregada:
+  order_number: "ORD-TEST-003"
+  user: cliente_user
+  status: "entregado"
+  total: 15.00

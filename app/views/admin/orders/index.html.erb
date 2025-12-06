@@ -1,5 +1,5 @@
 <div class="admin-header">
-  <h1 class="admin-title">🧾 Órdenes</h1>
+  <h1 class="admin-title">📋 Órdenes de Compra</h1>
 </div>
 
 <div class="table-container">
@@ -9,37 +9,58 @@
         <tr>
           <th>Nº Orden</th>
           <th>Cliente</th>
-          <th>Items</th>
+          <th>Fecha</th>
+          <th>Productos</th>
           <th>Total</th>
           <th>Estado</th>
-          <th>Fecha</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <% @orders.each do |order| %>
           <tr>
-            <td><%= order.order_number %></td>
-            <td><%= order.user&.name %></td>
-            <td><%= order.order_items.count %></td>
-            <td>S/ <%= number_with_precision(order.total || 0, precision: 2) %></td>
+            <td><strong><%= order.order_number %></strong></td>
             <td>
-              <% case order.status %>
-              <% when "pendiente" %>
-                <span style="color: var(--gloria-warning);">⏳ Pendiente</span>
-              <% when "pagado" %>
-                <span style="color: var(--gloria-blue-light);">💳 Pagado</span>
-              <% when "enviado" %>
-                <span style="color: var(--gloria-blue-dark);">🚚 Enviado</span>
-              <% when "entregado" %>
-                <span style="color: var(--gloria-success);">✓ Entregado</span>
-              <% when "cancelado" %>
-                <span style="color: var(--gloria-danger);">✗ Cancelado</span>
-              <% end %>
+              <div>
+                <strong><%= order.user.name %></strong>
+                <br>
+                <small style="color: #666;"><%= order.user.email %></small>
+              </div>
             </td>
             <td><%= order.created_at.strftime("%d/%m/%Y %H:%M") %></td>
             <td>
-              <a href="<%= admin_order_path(order) %>" class="btn btn-primary btn-sm">👁️</a>
+              <% order.order_items.each do |item| %>
+                <div style="font-size: 0.85rem;">
+                  <%= item.quantity %>x <%= item.product&.name || "Producto eliminado" %>
+                </div>
+              <% end %>
+            </td>
+            <td><strong>S/ <%= number_with_precision(order.total, precision: 2) %></strong></td>
+            <td>
+              <% 
+                status_colors = {
+                  'pendiente' => 'background: #e0e0e0; color: #666;',
+                  'enviado' => 'background: #d4edda; color: #155724;',
+                  'entregado' => 'background: #cce5ff; color: #004085;'
+                }
+              %>
+              <span style="<%= status_colors[order.status] || '' %> padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">
+                <%= order.status_icon %> <%= order.status_label %>
+              </span>
+            </td>
+            <td>
+              <div style="display: flex; gap: 4px;">
+                <% Order::STATUSES.each do |status_key, status_info| %>
+                  <% unless order.status == status_key %>
+                    <%= button_to status_info[:icon], 
+                        update_status_admin_order_path(order, status: status_key), 
+                        method: :patch, 
+                        class: "btn btn-sm #{status_key == 'enviado' ? 'btn-success' : (status_key == 'entregado' ? 'btn-primary' : 'btn-secondary')}", 
+                        title: "Marcar como #{status_info[:label]}",
+                        style: "padding: 4px 8px;" %>
+                  <% end %>
+                <% end %>
+              </div>
             </td>
           </tr>
         <% end %>
@@ -47,8 +68,27 @@
     </table>
   <% else %>
     <div class="empty-state">
-      <div class="empty-state-icon">🧾</div>
+      <div class="empty-state-icon">📋</div>
       <h3 class="empty-state-title">No hay órdenes</h3>
+      <p>Las órdenes aparecerán aquí cuando los clientes realicen compras.</p>
     </div>
   <% end %>
+</div>
+
+<div style="margin-top: 2rem; padding: 1rem; background: var(--gloria-gray-light); border-radius: 8px;">
+  <h4 style="margin: 0 0 1rem 0;">📊 Leyenda de Estados</h4>
+  <div style="display: flex; gap: 2rem;">
+    <div>
+      <span style="background: #e0e0e0; color: #666; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem;">⏳ Pendiente</span>
+      <span style="margin-left: 8px; color: #666;">Orden recibida, en espera</span>
+    </div>
+    <div>
+      <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem;">🚚 Enviado</span>
+      <span style="margin-left: 8px; color: #666;">Producto en camino</span>
+    </div>
+    <div>
+      <span style="background: #cce5ff; color: #004085; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem;">✅ Entregado</span>
+      <span style="margin-left: 8px; color: #666;">Pedido completado</span>
+    </div>
+  </div>
 </div>

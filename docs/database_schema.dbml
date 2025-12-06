@@ -1,14 +1,14 @@
-# Gloria Lácteos - Database Schema
-# Diagrama DBML actualizado - Diciembre 2025
+// Gloria Lácteos - Database Schema
+// Diagrama DBML actualizado - Diciembre 2025
 
 Project gloria_lacteos {
   database_type: 'SQLite'
   Note: 'E-commerce de productos lácteos Gloria - Ruby on Rails 8.1'
 }
 
-# ============================================
-# TABLAS DE USUARIOS Y AUTENTICACIÓN
-# ============================================
+// ============================================
+// TABLAS DE USUARIOS Y AUTENTICACIÓN
+// ============================================
 
 Table roles {
   id integer [pk, increment]
@@ -35,7 +35,7 @@ Table users {
 Table addresses {
   id integer [pk, increment]
   user_id integer [not null, ref: > users.id]
-  name varchar [note: 'Nombre de la dirección (Casa, Trabajo, etc)']
+  name varchar [note: 'Nombre de la dirección']
   street varchar
   district varchar
   city varchar
@@ -45,9 +45,9 @@ Table addresses {
   Note: 'Direcciones de entrega de los usuarios'
 }
 
-# ============================================
-# TABLAS DE PRODUCTOS
-# ============================================
+// ============================================
+// TABLAS DE PRODUCTOS
+// ============================================
 
 Table categories {
   id integer [pk, increment]
@@ -74,11 +74,10 @@ Table batches {
   batch_number varchar [unique, note: 'Número de lote único']
   quantity integer [note: 'Cantidad en el lote']
   expiration_date date [not null, note: 'Fecha de vencimiento']
-  product_id integer [not null, ref: > products.id, note: 'Legacy - no usado']
   created_at datetime [not null]
   updated_at datetime [not null]
   
-  Note: 'Lotes de productos con fecha de vencimiento. Un lote puede tener varios productos.'
+  Note: 'Lotes de productos con fecha de vencimiento'
 }
 
 Table products {
@@ -87,21 +86,21 @@ Table products {
   name varchar [not null]
   description text
   price decimal [not null]
-  stock integer [not null, default: 0, note: '0 = Agotado']
+  stock integer [not null, default: 0, note: '0 significa Agotado']
   image_url varchar [note: 'URL externa de imagen']
   is_perishable boolean [default: false]
   category_id integer [not null, ref: > categories.id]
   provider_id integer [not null, ref: > providers.id]
-  batch_id integer [ref: > batches.id, note: 'Lote al que pertenece (opcional)']
+  batch_id integer [ref: > batches.id, note: 'Lote opcional']
   created_at datetime [not null]
   updated_at datetime [not null]
   
-  Note: 'Productos de la tienda. Si batch_id apunta a un lote vencido, el producto no se puede vender.'
+  Note: 'Productos de la tienda'
 }
 
-# ============================================
-# TABLAS DE CARRITO Y ÓRDENES
-# ============================================
+// ============================================
+// TABLAS DE CARRITO Y ÓRDENES
+// ============================================
 
 Table cart_items {
   id integer [pk, increment]
@@ -111,24 +110,20 @@ Table cart_items {
   created_at datetime [not null]
   updated_at datetime [not null]
   
-  indexes {
-    (user_id, product_id) [unique]
-  }
-  
-  Note: 'Items del carrito persistente. Se guarda al cerrar sesión y se recupera al iniciar.'
+  Note: 'Items del carrito persistente - se guarda al logout'
 }
 
 Table orders {
   id integer [pk, increment]
   user_id integer [not null, ref: > users.id]
-  address_id integer [not null, ref: > addresses.id]
-  order_number varchar
-  status varchar [note: 'pendiente, procesando, enviado, entregado, cancelado']
+  address_id integer [ref: > addresses.id, note: 'Opcional']
+  order_number varchar [unique, note: 'Formato: ORD-YYYYMMDD-XXXXX']
+  status varchar [note: 'pendiente, enviado, entregado']
   total decimal
   created_at datetime [not null]
   updated_at datetime [not null]
   
-  Note: 'Órdenes de compra de los usuarios'
+  Note: 'Órdenes de compra creadas al hacer checkout'
 }
 
 Table order_items {
@@ -143,9 +138,9 @@ Table order_items {
   Note: 'Items individuales de cada orden'
 }
 
-# ============================================
-# TABLAS DE ACTIVE STORAGE (Rails)
-# ============================================
+// ============================================
+// TABLAS DE ACTIVE STORAGE
+// ============================================
 
 Table active_storage_blobs {
   id integer [pk, increment]
@@ -177,5 +172,5 @@ Table active_storage_variant_records {
   blob_id bigint [not null, ref: > active_storage_blobs.id]
   variation_digest varchar [not null]
   
-  Note: 'Variantes de imágenes (thumbnails, etc)'
+  Note: 'Variantes de imágenes'
 }

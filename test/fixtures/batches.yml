@@ -1,13 +1,16 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Fixtures para Batches (Lotes)
 
-one:
-  product: one
-  batch_number: MyString
-  expiration_date: 2025-12-06
-  quantity: 1
+lote_vigente:
+  batch_number: "LOTE-TEST-001"
+  expiration_date: <%= Date.current + 30.days %>
+  quantity: 100
 
-two:
-  product: two
-  batch_number: MyString
-  expiration_date: 2025-12-06
-  quantity: 1
+lote_vencido:
+  batch_number: "LOTE-TEST-002"
+  expiration_date: <%= Date.current - 10.days %>
+  quantity: 50
+
+lote_por_vencer:
+  batch_number: "LOTE-TEST-003"
+  expiration_date: <%= Date.current + 5.days %>
+  quantity: 25
