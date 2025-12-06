@@ -1,0 +1,47 @@
+<div class="admin-header">
+  <h1 class="admin-title">👥 Usuarios</h1>
+</div>
+
+<div class="table-container">
+  <% if @users.any? %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Registrado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td><%= user.id %></td>
+            <td><%= user.name %></td>
+            <td><%= user.email %></td>
+            <td><%= user.role&.name %></td>
+            <td>
+              <% if user.active? %>
+                <span style="color: var(--gloria-success);">✓ Activo</span>
+              <% else %>
+                <span style="color: var(--gloria-danger);">✗ Inactivo</span>
+              <% end %>
+            </td>
+            <td><%= user.created_at.strftime("%d/%m/%Y") %></td>
+            <td>
+              <a href="<%= admin_user_path(user) %>" class="btn btn-primary btn-sm">👁️ Ver</a>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state-icon">👥</div>
+      <h3 class="empty-state-title">No hay usuarios</h3>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,85 @@
+<% if product.errors.any? %>
+  <div class="form-errors">
+    <ul>
+      <% product.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: [:admin, product], local: true do |f| %>
+  <div class="form-group">
+    <label class="form-label">📎 SKU</label>
+    <%= f.text_field :sku, class: "form-control", required: true %>
+  </div>
+  
+  <div class="form-group">
+    <label class="form-label">📦 Nombre</label>
+    <%= f.text_field :name, class: "form-control", required: true %>
+  </div>
+  
+  <div class="form-group">
+    <label class="form-label">📝 Descripción</label>
+    <%= f.text_area :description, class: "form-control", rows: 4 %>
+  </div>
+  
+  <div class="form-group">
+    <label class="form-label">💰 Precio (S/)</label>
+    <%= f.number_field :price, class: "form-control", step: "0.01", min: "0", required: true %>
+  </div>
+  
+  <div class="form-group">
+    <label class="form-label">🏷️ Categoría</label>
+    <%= f.collection_select :category_id, Category.order(:name), :id, :name, { include_blank: "Seleccionar categoría" }, { class: "form-control", required: true } %>
+  </div>
+  
+  <div class="form-group">
+    <label class="form-label">🚚 Proveedor</label>
+    <%= f.collection_select :provider_id, Provider.order(:name), :id, :name, { include_blank: "Seleccionar proveedor" }, { class: "form-control", required: true } %>
+  </div>
+  
+  <div class="form-group">
+    <label class="form-label">🖼️ Imagen del producto</label>
+    <%= f.file_field :image, class: "form-control", accept: "image/*" %>
+    <% if product.image.attached? %>
+      <p class="mt-1" style="color: #666;">Imagen actual:</p>
+      <%= image_tag product.image, style: "max-width: 200px; margin-top: 0.5rem; border-radius: 8px;" %>
+    <% end %>
+  </div>
+  
+  <div class="form-group">
+    <label class="form-label">
+      <%= f.check_box :is_perishable %>
+      🧊 Es perecedero
+    </label>
+  </div>
+  
+  <% if product.new_record? %>
+  <hr style="margin: 1.5rem 0; border-color: var(--gloria-gray-light);">
+  <h4 style="margin-bottom: 1rem; color: var(--gloria-blue-dark);">📋 Lote Inicial (Opcional)</h4>
+  <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Puedes agregar un lote inicial al crear el producto, o dejarlo en blanco y agregarlo después.</p>
+  
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+    <div class="form-group">
+      <label class="form-label">Nº de Lote</label>
+      <%= f.text_field :batch_number, class: "form-control", placeholder: "Ej: LOTE-001" %>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Cantidad</label>
+      <%= f.number_field :batch_quantity, class: "form-control", min: 1, placeholder: "Ej: 100" %>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Fecha Vencimiento</label>
+      <%= f.date_field :batch_expiration_date, class: "form-control" %>
+    </div>
+  </div>
+  <% end %>
+  
+  <div class="form-actions">
+    <a href="<%= admin_products_path %>" class="btn btn-secondary">Cancelar</a>
+    <%= f.submit "Guardar", class: "btn btn-success" %>
+  </div>
+<% end %>

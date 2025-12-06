@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sku: MyString
+  name: MyString
+  description: MyText
+  price: 9.99
+  image_url: MyString
+  category: one
+  provider: one
+  is_perishable: false
+
+two:
+  sku: MyString
+  name: MyString
+  description: MyText
+  price: 9.99
+  image_url: MyString
+  category: two
+  provider: two
+  is_perishable: false

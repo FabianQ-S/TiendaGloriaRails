@@ -1,0 +1,71 @@
+<div class="admin-header">
+  <h1 class="admin-title">📊 Dashboard</h1>
+  <span>Bienvenido, <%= current_user.name %></span>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">📦</div>
+    <div class="stat-value"><%= @products_count %></div>
+    <div class="stat-label">Productos</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon">🏷️</div>
+    <div class="stat-value"><%= @categories_count %></div>
+    <div class="stat-label">Categorías</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon">🚚</div>
+    <div class="stat-value"><%= @providers_count %></div>
+    <div class="stat-label">Proveedores</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon">👥</div>
+    <div class="stat-value"><%= @users_count %></div>
+    <div class="stat-label">Usuarios</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon">🧾</div>
+    <div class="stat-value"><%= @orders_count %></div>
+    <div class="stat-label">Órdenes</div>
+  </div>
+</div>
+
+<div class="table-container">
+  <h3 style="padding: 1rem; background: var(--gloria-gray-light); border-bottom: 1px solid var(--gloria-gray);">
+    📋 Últimas Órdenes
+  </h3>
+  
+  <% if @recent_orders.any? %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Número</th>
+          <th>Cliente</th>
+          <th>Estado</th>
+          <th>Total</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @recent_orders.each do |order| %>
+          <tr>
+            <td><%= order.order_number %></td>
+            <td><%= order.user&.name || "N/A" %></td>
+            <td><%= order.status %></td>
+            <td>S/ <%= number_with_precision(order.total || 0, precision: 2) %></td>
+            <td><%= order.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state">
+      <p>No hay órdenes recientes</p>
+    </div>
+  <% end %>
+</div>

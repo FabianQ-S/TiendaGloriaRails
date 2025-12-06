@@ -1,0 +1,43 @@
+<div class="form-container">
+  <h2 class="form-title">📝 Crear Cuenta</h2>
+  
+  <% if @user.errors.any? %>
+    <div class="form-errors">
+      <ul>
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  <%= form_with model: @user, url: register_path, method: :post, local: true do |f| %>
+    <div class="form-group">
+      <label class="form-label">👤 Nombre completo</label>
+      <%= f.text_field :name, class: "form-control", placeholder: "Tu nombre", required: true %>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">📧 Email</label>
+      <%= f.email_field :email, class: "form-control", placeholder: "tu@email.com", required: true %>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">🔒 Contraseña</label>
+      <%= f.password_field :password, class: "form-control", placeholder: "Mínimo 6 caracteres", required: true %>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">🔒 Confirmar contraseña</label>
+      <%= f.password_field :password_confirmation, class: "form-control", placeholder: "Repite tu contraseña", required: true %>
+    </div>
+    
+    <div class="form-actions">
+      <%= f.submit "Crear cuenta", class: "btn btn-success btn-lg" %>
+    </div>
+  <% end %>
+  
+  <p class="text-center mt-3">
+    ¿Ya tienes cuenta? <a href="<%= login_path %>">Inicia sesión</a>
+  </p>
+</div>

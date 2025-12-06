@@ -1,0 +1,47 @@
+<div class="admin-header">
+  <h1 class="admin-title">👤 <%= @user.name %></h1>
+  <a href="<%= admin_users_path %>" class="btn btn-secondary">← Volver</a>
+</div>
+
+<div class="card" style="max-width: 600px;">
+  <div class="card-body">
+    <p><strong>📧 Email:</strong> <%= @user.email %></p>
+    <p><strong>🔐 Rol:</strong> <%= @user.role&.name %></p>
+    <p><strong>📅 Registrado:</strong> <%= @user.created_at.strftime("%d/%m/%Y %H:%M") %></p>
+    <p><strong>Estado:</strong> 
+      <% if @user.active? %>
+        <span style="color: var(--gloria-success);">✓ Activo</span>
+      <% else %>
+        <span style="color: var(--gloria-danger);">✗ Inactivo</span>
+      <% end %>
+    </p>
+    
+    <hr style="margin: 1rem 0;">
+    
+    <h4>📍 Direcciones</h4>
+    <% if @user.addresses.any? %>
+      <ul>
+        <% @user.addresses.each do |address| %>
+          <li><%= address.name %>: <%= address.street %>, <%= address.city %></li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p style="color: #666;">Sin direcciones registradas</p>
+    <% end %>
+    
+    <h4 class="mt-2">🧾 Órdenes</h4>
+    <% if @user.orders.any? %>
+      <ul>
+        <% @user.orders.order(created_at: :desc).limit(5).each do |order| %>
+          <li><%= order.order_number %> - <%= order.status %> - S/ <%= number_with_precision(order.total || 0, precision: 2) %></li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p style="color: #666;">Sin órdenes</p>
+    <% end %>
+  </div>
+</div>
+
+<p class="mt-2" style="color: #999; font-size: 0.875rem;">
+  ⚠️ No puedes editar las credenciales de los usuarios desde el panel de administración.
+</p>

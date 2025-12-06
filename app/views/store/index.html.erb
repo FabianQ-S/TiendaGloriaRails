@@ -1,0 +1,64 @@
+<% if params[:purchased] == "true" %>
+<script>
+  // Vanilla JS popup - runs on page load (Turbo disabled for checkout)
+  window.onload = function() {
+    alert("🎉 ¡HAS COMPRADO! 🎉\n\nGracias por tu compra.\nTotal: S/ <%= params[:total] %>\n\n¡Pronto recibirás tus productos Gloria!");
+  };
+</script>
+<% end %>
+
+<div class="page-header">
+  <h1 class="page-title">🥛 Productos Lácteos Gloria</h1>
+  <p class="page-subtitle">Los mejores productos lácteos del Perú</p>
+</div>
+
+<div class="search-filters">
+  <%= form_with url: root_path, method: :get, local: true, data: { turbo: false } do |f| %>
+    <%= text_field_tag :search, params[:search], placeholder: "🔍 Buscar productos...", class: "search-input" %>
+    
+    <%= select_tag :category_id, 
+        options_from_collection_for_select(@categories, :id, :name, params[:category_id]),
+        include_blank: "📂 Todas las categorías",
+        class: "filter-select",
+        onchange: "this.form.submit()" %>
+    
+    <%= submit_tag "Buscar", class: "btn btn-primary" %>
+  <% end %>
+</div>
+
+<% if @products.any? %>
+  <div class="products-grid">
+    <% @products.each do |product| %>
+      <div class="card">
+        <div class="card-image">
+          <% if product.image.attached? %>
+            <%= image_tag product.image, style: "width: 100%; height: 200px; object-fit: cover;" %>
+          <% elsif product.image_url.present? %>
+            <img src="<%= product.image_url %>" alt="<%= product.name %>" style="width: 100%; height: 200px; object-fit: cover;">
+          <% else %>
+            🧀
+          <% end %>
+        </div>
+        
+        <div class="card-body">
+          <h3 class="card-title"><%= product.name %></h3>
+          <p class="card-text">
+            <small>📂 <%= product.category&.name || "Sin categoría" %></small>
+          </p>
+          <p class="card-text"><%= truncate(product.description, length: 80) %></p>
+          <p class="card-price">S/ <%= number_with_precision(product.price, precision: 2) %></p>
+        </div>
+        
+        <div class="card-footer">
+          <%= button_to "🛒 Agregar al carrito", add_to_cart_path(product), method: :post, class: "btn btn-success", style: "width: 100%;" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <div class="empty-state-icon">🥛</div>
+    <h3 class="empty-state-title">No hay productos disponibles</h3>
+    <p>Pronto tendremos más productos lácteos para ti.</p>
+  </div>
+<% end %>

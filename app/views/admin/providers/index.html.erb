@@ -1,0 +1,47 @@
+<% if params[:delete_error] == "provider" %>
+<script>
+  // Vanilla JS popup
+  window.onload = function() {
+    alert("⚠️ IMPOSIBLE ELIMINAR ⚠️\n\nEl proveedor '<%= params[:name] %>' tiene productos relacionados.\n\nPrimero debes eliminar o reasignar los productos de este proveedor.");
+  };
+</script>
+<% end %>
+
+<div class="admin-header">
+  <h1 class="admin-title">🚚 Proveedores</h1>
+  <a href="<%= new_admin_provider_path %>" class="btn btn-success">➕ Nuevo Proveedor</a>
+</div>
+
+<div class="table-container">
+  <% if @providers.any? %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email de Contacto</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @providers.each do |provider| %>
+          <tr>
+            <td><%= provider.id %></td>
+            <td><%= provider.name %></td>
+            <td><%= provider.contact_email || "-" %></td>
+            <td class="table-actions">
+              <a href="<%= edit_admin_provider_path(provider) %>" class="btn btn-primary btn-sm">✏️</a>
+              <%= button_to "🗑️", admin_provider_path(provider), method: :delete, class: "btn btn-danger btn-sm", data: { turbo: false, confirm: "¿Eliminar este proveedor?" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state-icon">🚚</div>
+      <h3 class="empty-state-title">No hay proveedores</h3>
+      <a href="<%= new_admin_provider_path %>" class="btn btn-primary mt-2">Crear primer proveedor</a>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,74 @@
+<% if params[:delete_error] == "product_active_batches" %>
+<script>
+  window.onload = function() {
+    alert("⚠️ IMPOSIBLE ELIMINAR ⚠️\n\nEl producto '<%= params[:name] %>' tiene <%= params[:count] %> lote(s) vigente(s).\n\nPrimero debes eliminar los lotes o esperar a que venzan.");
+  };
+</script>
+<% elsif params[:delete_error] == "product_expired_batches" %>
+<form id="delete-expired-form" action="<%= admin_product_path(params[:product_id]) %>" method="post" style="display: none;">
+  <input type="hidden" name="_method" value="delete">
+  <input type="hidden" name="confirm_expired" value="1">
+  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+</form>
+<script>
+  window.onload = function() {
+    if (confirm("⚠️ LOTES VENCIDOS ⚠️\n\nEl producto '<%= params[:name] %>' tiene <%= params[:count] %> lote(s) VENCIDO(S).\n\n¿Desea eliminar el producto junto con todos sus lotes vencidos?")) {
+      document.getElementById('delete-expired-form').submit();
+    }
+  };
+</script>
+<% end %>
+
+<div class="admin-header">
+  <h1 class="admin-title">📦 Productos</h1>
+  <a href="<%= new_admin_product_path %>" class="btn btn-success">➕ Nuevo Producto</a>
+</div>
+
+<div class="table-container">
+  <% if @products.any? %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Proveedor</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @products.each do |product| %>
+          <tr>
+            <td><%= product.sku %></td>
+            <td>
+              <% if product.image.attached? %>
+                <%= image_tag product.image, style: "width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" %>
+              <% else %>
+                🧀
+              <% end %>
+            </td>
+            <td><%= product.name %></td>
+            <td><%= product.category&.name %></td>
+            <td><%= product.provider&.name %></td>
+            <td>S/ <%= number_with_precision(product.price, precision: 2) %></td>
+            <td><%= product.total_stock %></td>
+            <td class="table-actions">
+              <a href="<%= admin_product_path(product) %>" class="btn btn-secondary btn-sm" title="Ver producto y lotes">👁️</a>
+              <a href="<%= edit_admin_product_path(product) %>" class="btn btn-primary btn-sm">✏️</a>
+              <%= button_to "🗑️", admin_product_path(product), method: :delete, class: "btn btn-danger btn-sm", data: { turbo: false, confirm: "¿Eliminar este producto?" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state-icon">📦</div>
+      <h3 class="empty-state-title">No hay productos</h3>
+      <a href="<%= new_admin_product_path %>" class="btn btn-primary mt-2">Crear primer producto</a>
+    </div>
+  <% end %>
+</div>

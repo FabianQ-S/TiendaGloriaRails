@@ -1,0 +1,144 @@
+// Gloria Lácteos - Database Schema (DBML)
+// https://dbml.dbdiagram.io/
+
+Project GloriaLacteos {
+  database_type: 'SQLite'
+  Note: 'E-commerce de productos lácteos Gloria'
+}
+
+// ============ AUTHENTICATION & USERS ============
+
+Table roles {
+  id integer [pk, increment]
+  name varchar [not null, unique, note: 'Admin, Cliente']
+  created_at datetime
+  updated_at datetime
+}
+
+Table users {
+  id integer [pk, increment]
+  role_id integer [not null, ref: > roles.id]
+  name varchar [not null]
+  email varchar [not null, unique]
+  password_digest varchar [not null, note: 'bcrypt encrypted']
+  active boolean [default: true]
+  created_at datetime
+  updated_at datetime
+}
+
+Table addresses {
+  id integer [pk, increment]
+  user_id integer [not null, ref: > users.id]
+  name varchar [not null, note: 'Casa, Trabajo, etc.']
+  street varchar [not null]
+  city varchar [not null]
+  district varchar
+  created_at datetime
+  updated_at datetime
+}
+
+// ============ PRODUCTS & INVENTORY ============
+
+Table providers {
+  id integer [pk, increment]
+  name varchar [not null]
+  contact_email varchar
+  created_at datetime
+  updated_at datetime
+}
+
+Table categories {
+  id integer [pk, increment]
+  name varchar [not null]
+  parent_id integer [ref: > categories.id, note: 'Self-reference for subcategories']
+  created_at datetime
+  updated_at datetime
+}
+
+Table products {
+  id integer [pk, increment]
+  sku varchar [not null, unique]
+  name varchar [not null]
+  description text
+  price decimal [not null, note: 'Price in Soles (S/)']
+  image_url varchar [note: 'URL externa (legacy)']
+  category_id integer [not null, ref: > categories.id]
+  provider_id integer [not null, ref: > providers.id]
+  is_perishable boolean [default: false]
+  created_at datetime
+  updated_at datetime
+  
+  Note: 'También tiene Active Storage attachment para imágenes'
+}
+
+Table batches {
+  id integer [pk, increment]
+  product_id integer [not null, ref: > products.id]
+  batch_number varchar [not null]
+  expiration_date date [not null]
+  quantity integer [not null, default: 0]
+  created_at datetime
+  updated_at datetime
+  
+  Note: 'Control de lotes y fechas de vencimiento'
+}
+
+// ============ ORDERS ============
+
+Table orders {
+  id integer [pk, increment]
+  order_number varchar [not null, unique, note: 'ORD-YYYYMMDD-XXXX']
+  user_id integer [not null, ref: > users.id]
+  address_id integer [ref: > addresses.id, note: 'Optional']
+  status varchar [not null, note: 'pendiente, pagado, enviado, entregado, cancelado']
+  total decimal
+  created_at datetime
+  updated_at datetime
+}
+
+Table order_items {
+  id integer [pk, increment]
+  order_id integer [not null, ref: > orders.id]
+  product_id integer [not null, ref: > products.id]
+  quantity integer [not null]
+  price decimal [not null, note: 'Precio al momento de la compra']
+  created_at datetime
+  updated_at datetime
+}
+
+// ============ ACTIVE STORAGE (Rails) ============
+
+Table active_storage_blobs {
+  id integer [pk, increment]
+  key varchar [not null, unique]
+  filename varchar [not null]
+  content_type varchar
+  metadata text
+  service_name varchar [not null]
+  byte_size bigint [not null]
+  checksum varchar
+  created_at datetime
+}
+
+Table active_storage_attachments {
+  id integer [pk, increment]
+  name varchar [not null]
+  record_type varchar [not null]
+  record_id integer [not null]
+  blob_id integer [not null, ref: > active_storage_blobs.id]
+  created_at datetime
+  
+  indexes {
+    (record_type, record_id, name, blob_id) [unique]
+  }
+}
+
+Table active_storage_variant_records {
+  id integer [pk, increment]
+  blob_id integer [not null, ref: > active_storage_blobs.id]
+  variation_digest varchar [not null]
+  
+  indexes {
+    (blob_id, variation_digest) [unique]
+  }
+}

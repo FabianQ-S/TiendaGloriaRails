@@ -1,0 +1,59 @@
+<div class="page-header">
+  <h1 class="page-title">🛒 Tu Carrito</h1>
+</div>
+
+<% if @cart_items.any? %>
+  <div class="cart-container">
+    <% @cart_items.each do |item| %>
+      <div class="cart-item">
+        <div class="cart-item-image">
+          <% if item[:product].image.attached? %>
+            <%= image_tag item[:product].image, style: "width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" %>
+          <% elsif item[:product].image_url.present? %>
+            <img src="<%= item[:product].image_url %>" alt="<%= item[:product].name %>" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+          <% else %>
+            🧀
+          <% end %>
+        </div>
+        
+        <div class="cart-item-info">
+          <h4 class="cart-item-title"><%= item[:product].name %></h4>
+          <p class="cart-item-price">S/ <%= number_with_precision(item[:product].price, precision: 2) %> c/u</p>
+        </div>
+        
+        <div class="cart-item-quantity" style="display: flex; align-items: center; gap: 8px;">
+          <%= button_to "➖", update_cart_quantity_path(item[:product], quantity: item[:quantity] - 1), method: :patch, class: "btn btn-secondary btn-sm", style: "padding: 5px 12px;" %>
+          <span style="font-weight: bold; min-width: 30px; text-align: center;"><%= item[:quantity] %></span>
+          <%= button_to "➕", update_cart_quantity_path(item[:product], quantity: item[:quantity] + 1), method: :patch, class: "btn btn-secondary btn-sm", style: "padding: 5px 12px;" %>
+        </div>
+        
+        <div class="cart-item-subtotal">
+          S/ <%= number_with_precision(item[:subtotal], precision: 2) %>
+        </div>
+        
+        <div>
+          <%= button_to "🗑️", remove_from_cart_path(item[:product]), method: :delete, class: "btn btn-danger btn-sm" %>
+        </div>
+      </div>
+    <% end %>
+    
+    <div class="cart-total">
+      <span class="cart-total-label">Total:</span>
+      <span class="cart-total-amount">S/ <%= number_with_precision(@total, precision: 2) %></span>
+    </div>
+    
+    <div class="form-actions mt-3">
+      <a href="<%= root_path %>" class="btn btn-secondary">← Seguir comprando</a>
+      <%= button_to "🎉 Comprar ahora", checkout_path, method: :post, class: "btn btn-success btn-lg", data: { turbo: false } %>
+    </div>
+  </div>
+<% else %>
+  <div class="cart-container">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛒</div>
+      <h3>Tu carrito está vacío</h3>
+      <p>¡Agrega algunos productos lácteos deliciosos!</p>
+      <a href="<%= root_path %>" class="btn btn-primary mt-2">Ver productos</a>
+    </div>
+  </div>
+<% end %>

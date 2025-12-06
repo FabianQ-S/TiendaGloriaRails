@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Gloria Lácteos - Tienda Online 🥛" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Gloria Lácteos">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="Tienda online de productos lácteos Gloria">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="<%= root_path %>" class="navbar-brand">
+          🥛 Gloria Lácteos
+        </a>
+        
+        <ul class="navbar-nav">
+          <li>
+            <a href="<%= root_path %>" class="nav-link <%= 'active' if controller_name == 'store' && action_name == 'index' %>">
+              🏠 Tienda
+            </a>
+          </li>
+          
+          <li>
+            <a href="<%= cart_path %>" class="nav-link <%= 'active' if controller_name == 'carts' %>">
+              🛒 Carrito
+              <% if cart_count > 0 %>
+                <span class="cart-badge"><%= cart_count %></span>
+              <% end %>
+            </a>
+          </li>
+          
+          <% if logged_in? %>
+            <% if admin? %>
+              <li>
+                <a href="<%= admin_dashboard_path %>" class="nav-link">
+                  ⚙️ Admin
+                </a>
+              </li>
+            <% end %>
+            
+            <li>
+              <a href="<%= profile_path %>" class="nav-link <%= 'active' if controller_name == 'profile' %>">
+                👤 <%= current_user.name %>
+              </a>
+            </li>
+            
+            <li>
+              <%= button_to "🚪 Salir", logout_path, method: :delete, class: "nav-link", style: "background: none; border: none; cursor: pointer;" %>
+            </li>
+          <% else %>
+            <li>
+              <a href="<%= login_path %>" class="nav-link <%= 'active' if controller_name == 'sessions' %>">
+                🔑 Ingresar
+              </a>
+            </li>
+            <li>
+              <a href="<%= register_path %>" class="nav-link <%= 'active' if controller_name == 'registrations' %>">
+                📝 Registrarse
+              </a>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="main-container">
+      <%= render "shared/flash_messages" %>
+      <%= yield %>
+    </main>
+
+    <footer class="footer">
+      <p>🥛 Gloria Lácteos © <%= Time.current.year %> - Productos lácteos de calidad</p>
+      <p>Hecho con ❤️ en Perú</p>
+    </footer>
+  </body>
+</html>

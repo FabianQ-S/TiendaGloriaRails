@@ -1,0 +1,77 @@
+<div class="admin-header">
+  <h1 class="admin-title">📦 <%= @product.name %></h1>
+  <div class="d-flex gap-1">
+    <a href="<%= edit_admin_product_path(@product) %>" class="btn btn-primary">✏️ Editar</a>
+    <a href="<%= admin_products_path %>" class="btn btn-secondary">← Volver</a>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 1000px;">
+  <div class="card">
+    <div class="card-image">
+      <% if @product.image.attached? %>
+        <%= image_tag @product.image, style: "width: 100%; height: 300px; object-fit: cover;" %>
+      <% else %>
+        🧀
+      <% end %>
+    </div>
+    <div class="card-body">
+      <p><strong>SKU:</strong> <%= @product.sku %></p>
+      <p><strong>Categoría:</strong> <%= @product.category&.name %></p>
+      <p><strong>Proveedor:</strong> <%= @product.provider&.name %></p>
+      <p><strong>Precio:</strong> S/ <%= number_with_precision(@product.price, precision: 2) %></p>
+      <p><strong>Stock Total:</strong> <%= @product.total_stock %> unidades</p>
+      <p><strong>Perecedero:</strong> <%= @product.is_perishable ? "Sí" : "No" %></p>
+      <p><strong>Descripción:</strong></p>
+      <p><%= @product.description %></p>
+    </div>
+  </div>
+  
+  <div>
+    <div class="card">
+      <div class="card-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="margin: 0;">📋 Lotes de este Producto</h3>
+          <a href="<%= new_admin_batch_path(product_id: @product.id) %>" class="btn btn-success btn-sm">➕ Nuevo Lote</a>
+        </div>
+        
+        <% if @product.batches.any? %>
+          <table class="table" style="font-size: 0.9rem;">
+            <thead>
+              <tr>
+                <th>Nº Lote</th>
+                <th>Cantidad</th>
+                <th>Vencimiento</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @product.batches.order(:expiration_date).each do |batch| %>
+                <tr>
+                  <td><%= batch.batch_number %></td>
+                  <td><%= batch.quantity %></td>
+                  <td><%= batch.expiration_date&.strftime("%d/%m/%Y") %></td>
+                  <td>
+                    <% if batch.expiration_date && batch.expiration_date < Date.current %>
+                      <span style="color: var(--gloria-danger);">⚠️ Vencido</span>
+                    <% elsif batch.expiration_date && batch.expiration_date < Date.current + 7.days %>
+                      <span style="color: var(--gloria-warning);">⚡ Por vencer</span>
+                    <% else %>
+                      <span style="color: var(--gloria-success);">✓ OK</span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <a href="<%= edit_admin_batch_path(batch) %>" class="btn btn-primary btn-sm">✏️</a>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <p style="color: #666; text-align: center; padding: 1rem;">No hay lotes registrados para este producto</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

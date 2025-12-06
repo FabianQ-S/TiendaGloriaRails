@@ -1,0 +1,54 @@
+<div class="admin-header">
+  <h1 class="admin-title">🧾 Orden <%= @order.order_number %></h1>
+  <a href="<%= admin_orders_path %>" class="btn btn-secondary">← Volver</a>
+</div>
+
+<div class="card" style="max-width: 700px;">
+  <div class="card-body">
+    <p><strong>👤 Cliente:</strong> <%= @order.user&.name %> (<%= @order.user&.email %>)</p>
+    <p><strong>📅 Fecha:</strong> <%= @order.created_at.strftime("%d/%m/%Y %H:%M") %></p>
+    <p><strong>📍 Dirección:</strong> <%= @order.address&.street || "No especificada" %></p>
+    
+    <hr style="margin: 1rem 0;">
+    
+    <%= form_with model: [:admin, @order], local: true, style: "display: flex; gap: 1rem; align-items: center;" do |f| %>
+      <label><strong>Estado:</strong></label>
+      <%= f.select :status, [["Pendiente", "pendiente"], ["Pagado", "pagado"], ["Enviado", "enviado"], ["Entregado", "entregado"], ["Cancelado", "cancelado"]], {}, class: "form-control", style: "width: auto;" %>
+      <%= f.submit "Actualizar", class: "btn btn-primary btn-sm" %>
+    <% end %>
+    
+    <hr style="margin: 1rem 0;">
+    
+    <h4>📦 Items</h4>
+    <% if @order.order_items.any? %>
+      <table class="table" style="margin-top: 1rem;">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unit.</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @order.order_items.includes(:product).each do |item| %>
+            <tr>
+              <td><%= item.product&.name %></td>
+              <td><%= item.quantity %></td>
+              <td>S/ <%= number_with_precision(item.price, precision: 2) %></td>
+              <td>S/ <%= number_with_precision(item.price * item.quantity, precision: 2) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" style="text-align: right;"><strong>Total:</strong></td>
+            <td><strong>S/ <%= number_with_precision(@order.total || 0, precision: 2) %></strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    <% else %>
+      <p style="color: #666;">Sin items</p>
+    <% end %>
+  </div>
+</div>

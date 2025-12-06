@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Admin - Gloria Lácteos" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar-brand">
+          <a href="<%= admin_dashboard_path %>">
+            🥛 Gloria Admin
+          </a>
+        </div>
+        
+        <ul class="admin-nav">
+          <li class="admin-nav-item">
+            <a href="<%= admin_dashboard_path %>" class="admin-nav-link <%= 'active' if controller_name == 'dashboard' %>">
+              📊 Dashboard
+            </a>
+          </li>
+          <li class="admin-nav-item">
+            <a href="<%= admin_products_path %>" class="admin-nav-link <%= 'active' if controller_name == 'products' %>">
+              📦 Productos
+            </a>
+          </li>
+          <li class="admin-nav-item">
+            <a href="<%= admin_categories_path %>" class="admin-nav-link <%= 'active' if controller_name == 'categories' %>">
+              🏷️ Categorías
+            </a>
+          </li>
+          <li class="admin-nav-item">
+            <a href="<%= admin_providers_path %>" class="admin-nav-link <%= 'active' if controller_name == 'providers' %>">
+              🚚 Proveedores
+            </a>
+          </li>
+          <li class="admin-nav-item">
+            <a href="<%= admin_batches_path %>" class="admin-nav-link <%= 'active' if controller_name == 'batches' %>">
+              📋 Lotes
+            </a>
+          </li>
+          <li class="admin-nav-item">
+            <a href="<%= admin_orders_path %>" class="admin-nav-link <%= 'active' if controller_name == 'orders' %>">
+              🧾 Órdenes
+            </a>
+          </li>
+          <li class="admin-nav-item">
+            <a href="<%= admin_users_path %>" class="admin-nav-link <%= 'active' if controller_name == 'users' %>">
+              👥 Usuarios
+            </a>
+          </li>
+          <li class="admin-nav-item">
+            <a href="<%= admin_roles_path %>" class="admin-nav-link <%= 'active' if controller_name == 'roles' %>">
+              🔐 Roles
+            </a>
+          </li>
+        </ul>
+        
+        <ul class="admin-nav" style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+          <li class="admin-nav-item">
+            <a href="<%= root_path %>" class="admin-nav-link">
+              🏠 Ir a la Tienda
+            </a>
+          </li>
+          <li class="admin-nav-item">
+            <%= button_to "🚪 Cerrar Sesión", logout_path, method: :delete, class: "admin-nav-link", style: "background: none; border: none; width: 100%; text-align: left; cursor: pointer; color: rgba(255,255,255,0.8);" %>
+          </li>
+        </ul>
+      </aside>
+      
+      <main class="admin-content">
+        <%= render "shared/flash_messages" %>
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>

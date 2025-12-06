@@ -1,0 +1,58 @@
+<div class="admin-header">
+  <h1 class="admin-title">📋 Lotes</h1>
+  <a href="<%= new_admin_batch_path %>" class="btn btn-success">➕ Nuevo Lote</a>
+</div>
+
+<div class="table-container">
+  <% if @batches.any? %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Nº Lote</th>
+          <th>Cantidad</th>
+          <th>Vencimiento</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @batches.each do |batch| %>
+          <tr>
+            <td>
+              <% if batch.product %>
+                <a href="<%= admin_product_path(batch.product) %>" style="color: var(--gloria-blue-dark); text-decoration: underline;">
+                  <%= batch.product.name %>
+                </a>
+              <% else %>
+                -
+              <% end %>
+            </td>
+            <td><%= batch.batch_number %></td>
+            <td><%= batch.quantity %></td>
+            <td><%= batch.expiration_date&.strftime("%d/%m/%Y") %></td>
+            <td>
+              <% if batch.expiration_date && batch.expiration_date < Date.current %>
+                <span style="color: var(--gloria-danger);">⚠️ Vencido</span>
+              <% elsif batch.expiration_date && batch.expiration_date < Date.current + 7.days %>
+                <span style="color: var(--gloria-warning);">⚡ Por vencer</span>
+              <% else %>
+                <span style="color: var(--gloria-success);">✓ Vigente</span>
+              <% end %>
+            </td>
+            <td class="table-actions">
+              <a href="<%= edit_admin_batch_path(batch) %>" class="btn btn-primary btn-sm">✏️</a>
+              <%= button_to "🗑️", admin_batch_path(batch), method: :delete, class: "btn btn-danger btn-sm", data: { confirm: "¿Eliminar este lote?" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state-icon">📋</div>
+      <h3 class="empty-state-title">No hay lotes</h3>
+      <a href="<%= new_admin_batch_path %>" class="btn btn-primary mt-2">Crear primer lote</a>
+    </div>
+  <% end %>
+</div>

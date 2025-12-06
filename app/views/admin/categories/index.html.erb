@@ -1,0 +1,47 @@
+<% if params[:delete_error] == "category" %>
+<script>
+  // Vanilla JS popup
+  window.onload = function() {
+    alert("⚠️ IMPOSIBLE ELIMINAR ⚠️\n\nLa categoría '<%= params[:name] %>' tiene productos relacionados.\n\nPrimero debes eliminar o reasignar los productos de esta categoría.");
+  };
+</script>
+<% end %>
+
+<div class="admin-header">
+  <h1 class="admin-title">🏷️ Categorías</h1>
+  <a href="<%= new_admin_category_path %>" class="btn btn-success">➕ Nueva Categoría</a>
+</div>
+
+<div class="table-container">
+  <% if @categories.any? %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Categoría Padre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @categories.each do |category| %>
+          <tr>
+            <td><%= category.id %></td>
+            <td><%= category.name %></td>
+            <td><%= category.parent&.name || "-" %></td>
+            <td class="table-actions">
+              <a href="<%= edit_admin_category_path(category) %>" class="btn btn-primary btn-sm">✏️</a>
+              <%= button_to "🗑️", admin_category_path(category), method: :delete, class: "btn btn-danger btn-sm", data: { turbo: false, confirm: "¿Eliminar esta categoría?" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state-icon">🏷️</div>
+      <h3 class="empty-state-title">No hay categorías</h3>
+      <a href="<%= new_admin_category_path %>" class="btn btn-primary mt-2">Crear primera categoría</a>
+    </div>
+  <% end %>
+</div>

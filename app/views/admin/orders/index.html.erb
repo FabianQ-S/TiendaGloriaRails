@@ -1,0 +1,54 @@
+<div class="admin-header">
+  <h1 class="admin-title">🧾 Órdenes</h1>
+</div>
+
+<div class="table-container">
+  <% if @orders.any? %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nº Orden</th>
+          <th>Cliente</th>
+          <th>Items</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @orders.each do |order| %>
+          <tr>
+            <td><%= order.order_number %></td>
+            <td><%= order.user&.name %></td>
+            <td><%= order.order_items.count %></td>
+            <td>S/ <%= number_with_precision(order.total || 0, precision: 2) %></td>
+            <td>
+              <% case order.status %>
+              <% when "pendiente" %>
+                <span style="color: var(--gloria-warning);">⏳ Pendiente</span>
+              <% when "pagado" %>
+                <span style="color: var(--gloria-blue-light);">💳 Pagado</span>
+              <% when "enviado" %>
+                <span style="color: var(--gloria-blue-dark);">🚚 Enviado</span>
+              <% when "entregado" %>
+                <span style="color: var(--gloria-success);">✓ Entregado</span>
+              <% when "cancelado" %>
+                <span style="color: var(--gloria-danger);">✗ Cancelado</span>
+              <% end %>
+            </td>
+            <td><%= order.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+            <td>
+              <a href="<%= admin_order_path(order) %>" class="btn btn-primary btn-sm">👁️</a>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state-icon">🧾</div>
+      <h3 class="empty-state-title">No hay órdenes</h3>
+    </div>
+  <% end %>
+</div>

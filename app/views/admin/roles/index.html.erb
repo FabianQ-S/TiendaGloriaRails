@@ -1,0 +1,40 @@
+<div class="admin-header">
+  <h1 class="admin-title">🔐 Roles</h1>
+  <a href="<%= new_admin_role_path %>" class="btn btn-success">➕ Nuevo Rol</a>
+</div>
+
+<div class="table-container">
+  <% if @roles.any? %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Usuarios</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @roles.each do |role| %>
+          <tr>
+            <td><%= role.id %></td>
+            <td><%= role.name %></td>
+            <td><%= role.users.count %></td>
+            <td class="table-actions">
+              <a href="<%= edit_admin_role_path(role) %>" class="btn btn-primary btn-sm">✏️</a>
+              <% if role.users.count == 0 %>
+                <%= button_to "🗑️", admin_role_path(role), method: :delete, class: "btn btn-danger btn-sm", data: { confirm: "¿Eliminar este rol?" } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state-icon">🔐</div>
+      <h3 class="empty-state-title">No hay roles</h3>
+      <a href="<%= new_admin_role_path %>" class="btn btn-primary mt-2">Crear primer rol</a>
+    </div>
+  <% end %>
+</div>
