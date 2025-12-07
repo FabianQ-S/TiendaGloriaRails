@@ -1,8 +1,10 @@
-# 🥛 Gloria Lácteos - E-commerce
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/FabianQ-S/TiendaGloriaRails) 
+# 🥛 Gloria Lácteos - E-commerce 
 
 ![Ruby on Rails](https://img.shields.io/badge/Rails-8.1-red)
 ![SQLite](https://img.shields.io/badge/SQLite-3-blue)
 ![Version](https://img.shields.io/badge/version-1.0.1-green)
+
 
 E-commerce de productos lácteos Gloria construido con Ruby on Rails.
 
