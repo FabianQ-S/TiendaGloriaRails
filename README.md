@@ -78,3 +78,18 @@ bin/rails test test/models
 ## 📝 Licencia
 
 MIT License - Proyecto educativo
+
+## 📝 Autores
+
+- [Joel](https://github.com/JoelCm07) git hub
+- **Alumno:** Richard Joel Cuellar Mucha
+- **Codigo estudiantil:** pt61008535
+- **Correo:** richardjoelcm@gmail.com
+
+## 📝 Idat 
+
+- **Carrera:** Desarrollo de sistemas
+- **Instituto:** Idat
+
+
+
