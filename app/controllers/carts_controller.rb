@@ -12,11 +12,14 @@ class CartsController < ApplicationController
     end
 
     product_id = params[:id].to_s
+    quantity = params[:quantity].to_i
+    quantity = 1 if quantity < 1
+    
     cart[product_id] ||= 0
-    cart[product_id] += 1
+    cart[product_id] += quantity
 
     product = Product.find(params[:id])
-    flash[:notice] = "✅ #{product.name} agregado al carrito"
+    flash[:notice] = "✅ #{product.name} (x#{quantity}) agregado al carrito"
     redirect_back(fallback_location: root_path)
   end
 

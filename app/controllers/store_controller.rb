@@ -1,6 +1,6 @@
 class StoreController < ApplicationController
   def index
-    @categories = Category.where(parent_id: nil).order(:name)
+    @categories = Category.order(:name)
     @products = Product.includes(:category, :provider)
 
     # Filtrar por categoría

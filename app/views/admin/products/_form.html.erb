@@ -68,7 +68,7 @@
   <div class="form-group">
     <label class="form-label">🖼️ Imagen del producto</label>
     <%= f.file_field :image, class: "form-control", accept: "image/*" %>
-    <% if product.image.attached? %>
+    <% if product.persisted? && product.image.attached? %>
       <p class="mt-1" style="color: #666;">Imagen actual:</p>
       <%= image_tag product.image, style: "max-width: 200px; margin-top: 0.5rem; border-radius: 8px;" %>
     <% end %>

@@ -1,0 +1,388 @@
+<div class="page-header">
+  <h1 class="page-title">📦 <%= @product.name %></h1>
+  <a href="<%= root_path %>" class="btn btn-secondary">← Volver a la tienda</a>
+</div>
+
+<div class="product-detail-container">
+  <!-- Columna izquierda: Imagen y detalles básicos -->
+  <div class="card product-detail-card">
+    <div class="card-image product-detail-image">
+      <% if @product.image.attached? %>
+        <%= image_tag @product.image, style: "width: 100%; height: 350px; object-fit: cover;" %>
+      <% elsif @product.image_url.present? %>
+        <img src="<%= @product.image_url %>" alt="<%= @product.name %>" style="width: 100%; height: 350px; object-fit: cover;">
+      <% else %>
+        <div class="product-no-image">🧀</div>
+      <% end %>
+      
+      <% if @product.batch_expired? %>
+        <div class="product-badge product-badge-expired">⚠️ VENCIDO</div>
+      <% elsif @product.out_of_stock? %>
+        <div class="product-badge product-badge-out-of-stock">AGOTADO</div>
+      <% end %>
+    </div>
+    
+    <div class="card-body">
+      <div class="product-info-list">
+        <p><strong>Categoría:</strong> <%= @product.category&.name || "Sin categoría" %></p>
+        <p><strong>Proveedor:</strong> <%= @product.provider&.name || "Sin proveedor" %></p>
+        <p><strong>Precio:</strong> <span class="product-detail-price">S/ <%= number_with_precision(@product.price, precision: 2) %></span></p>
+        <p>
+          <strong>Stock:</strong> 
+          <span style="color: <%= @product.unavailable_for_sale? ? 'var(--gloria-danger)' : 'var(--gloria-success)' %>; font-weight: bold;">
+            <%= @product.stock %> unidades
+            <%= '❌ AGOTADO' if @product.out_of_stock? %>
+          </span>
+        </p>
+        <% if @product.batch %>
+          <p>
+            <strong>Lote:</strong> <%= @product.batch.batch_number %>
+            <% if @product.batch.expired? %>
+              <span style="color: var(--gloria-danger);">⚠️ VENCIDO</span>
+            <% else %>
+              <span style="color: #666;">(vence: <%= @product.batch.expiration_date&.strftime("%d/%m/%Y") %>)</span>
+            <% end %>
+          </p>
+        <% end %>
+      </div>
+      
+      <div class="product-description">
+        <strong>Descripción:</strong>
+        <p><%= @product.description %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Columna derecha: Estado y carrito -->
+  <div class="product-detail-sidebar">
+    <!-- Estado del Producto -->
+    <div class="card">
+      <div class="card-body">
+        <h3 style="margin: 0 0 1rem 0;">📊 Estado del Producto</h3>
+        
+        <% if @product.unavailable_for_sale? %>
+          <div class="product-status-box product-status-unavailable">
+            <p class="product-status-title">
+              <% if @product.batch_expired? %>
+                ⚠️ PRODUCTO NO DISPONIBLE - Lote Vencido
+              <% else %>
+                ❌ PRODUCTO AGOTADO - Sin stock
+              <% end %>
+            </p>
+            <p class="product-status-subtitle">
+              Este producto no está disponible para compra.
+            </p>
+          </div>
+        <% else %>
+          <div class="product-status-box product-status-available">
+            <p class="product-status-title" style="color: var(--gloria-success);">
+              ✓ DISPONIBLE PARA COMPRA
+            </p>
+            <p class="product-status-subtitle">
+              <%= @product.stock %> unidades en stock
+            </p>
+          </div>
+        <% end %>
+        
+        <div class="product-stats-grid">
+          <div class="product-stat-box">
+            <p class="product-stat-value"><%= @product.stock %></p>
+            <p class="product-stat-label">Stock disponible</p>
+          </div>
+          <div class="product-stat-box">
+            <p class="product-stat-value">S/ <%= number_with_precision(@product.price, precision: 2) %></p>
+            <p class="product-stat-label">Precio unitario</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agregar al carrito -->
+    <div class="card">
+      <div class="card-body">
+        <h3 style="margin: 0 0 1rem 0;">🛒 Agregar al Carrito</h3>
+        
+        <% if @product.unavailable_for_sale? %>
+          <div class="product-cart-disabled">
+            <p>
+              <% if @product.batch_expired? %>
+                ⚠️ Este producto está vencido y no puede ser agregado al carrito.
+              <% else %>
+                ❌ Este producto está agotado y no puede ser agregado al carrito.
+              <% end %>
+            </p>
+            <button class="btn btn-secondary" style="width: 100%; cursor: not-allowed;" disabled>
+              <% if @product.batch_expired? %>⚠️ Vencido<% else %>❌ Agotado<% end %>
+            </button>
+          </div>
+        <% else %>
+          <%= form_with url: add_to_cart_path(@product), method: :post, local: true, class: "cart-form", data: { turbo: false } do %>
+            <div class="quantity-selector">
+              <label for="quantity" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Cantidad:</label>
+              <div class="quantity-controls">
+                <button type="button" class="quantity-btn quantity-btn-minus" onclick="decrementQuantity()">−</button>
+                <input type="number" name="quantity" id="quantity" value="1" min="1" max="<%= @product.stock %>" class="quantity-input" readonly>
+                <button type="button" class="quantity-btn quantity-btn-plus" onclick="incrementQuantity(<%= @product.stock %>)">+</button>
+              </div>
+              <small style="color: #666; margin-top: 0.5rem; display: block;">Máximo: <%= @product.stock %> unidades</small>
+            </div>
+            
+            <div class="subtotal-preview">
+              <span>Subtotal:</span>
+              <span class="subtotal-amount" id="subtotal">S/ <%= number_with_precision(@product.price, precision: 2) %></span>
+            </div>
+            
+            <button type="submit" class="btn btn-success cart-submit-btn">
+              🛒 Agregar al carrito
+            </button>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const price = <%= @product.price %>;
+  
+  function updateSubtotal() {
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const subtotal = (price * quantity).toFixed(2);
+    document.getElementById('subtotal').textContent = 'S/ ' + subtotal;
+  }
+  
+  function decrementQuantity() {
+    const input = document.getElementById('quantity');
+    const currentValue = parseInt(input.value);
+    if (currentValue > 1) {
+      input.value = currentValue - 1;
+      updateSubtotal();
+    }
+  }
+  
+  function incrementQuantity(maxStock) {
+    const input = document.getElementById('quantity');
+    const currentValue = parseInt(input.value);
+    if (currentValue < maxStock) {
+      input.value = currentValue + 1;
+      updateSubtotal();
+    }
+  }
+</script>
+
+<style>
+  .product-detail-container {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  @media (max-width: 900px) {
+    .product-detail-container {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .product-detail-image {
+    position: relative;
+  }
+  
+  .product-no-image {
+    width: 100%;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    background: var(--gloria-gray-light);
+  }
+  
+  .product-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .product-badge-expired {
+    background: #8B0000;
+  }
+  
+  .product-badge-out-of-stock {
+    background: var(--gloria-danger);
+  }
+  
+  .product-info-list p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+  }
+  
+  .product-detail-price {
+    color: var(--gloria-primary);
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+  
+  .product-description {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gloria-gray-light);
+  }
+  
+  .product-description p {
+    color: #555;
+    line-height: 1.6;
+  }
+  
+  .product-status-box {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .product-status-unavailable {
+    background: #fee;
+  }
+  
+  .product-status-available {
+    background: #efe;
+  }
+  
+  .product-status-title {
+    margin: 0;
+    color: var(--gloria-danger);
+    font-weight: bold;
+  }
+  
+  .product-status-subtitle {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .product-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .product-stat-box {
+    padding: 1rem;
+    background: var(--gloria-gray-light);
+    border-radius: 8px;
+  }
+  
+  .product-stat-value {
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: bold;
+    color: var(--gloria-primary);
+  }
+  
+  .product-stat-label {
+    margin: 0;
+    color: #666;
+    font-size: 0.85rem;
+  }
+  
+  .product-cart-disabled {
+    text-align: center;
+    color: #666;
+  }
+  
+  .product-cart-disabled p {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .cart-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .quantity-selector {
+    text-align: center;
+  }
+  
+  .quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+  
+  .quantity-btn {
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: #f0f0f0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #6B4EAF;
+  }
+  
+  .quantity-btn:hover {
+    background: #e0e0e0;
+  }
+  
+  .quantity-btn:active {
+    transform: scale(0.95);
+  }
+  
+  .quantity-btn-minus {
+    border-radius: 25px 0 0 25px;
+  }
+  
+  .quantity-btn-plus {
+    border-radius: 0 25px 25px 0;
+  }
+  
+  .quantity-input {
+    width: 60px;
+    height: 50px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border: none;
+    background: #f8f8f8;
+    -moz-appearance: textfield;
+  }
+  
+  .quantity-input::-webkit-outer-spin-button,
+  .quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  .subtotal-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--gloria-gray-light);
+    border-radius: 8px;
+    font-size: 1.1rem;
+  }
+  
+  .subtotal-amount {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--gloria-primary);
+  }
+  
+  .cart-submit-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+</style>
