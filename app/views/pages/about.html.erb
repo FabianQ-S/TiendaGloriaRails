@@ -1,0 +1,536 @@
+<% content_for(:title) { "Sobre Nosotros - Gloria Lácteos" } %>
+
+<div class="about-page">
+  <!-- Header -->
+  <div class="about-header">
+    <h1 class="about-title">📖 Sobre Nosotros</h1>
+    <p class="about-subtitle">Conoce más sobre este proyecto educativo</p>
+  </div>
+
+  <!-- Sección 1: Contexto Educativo IDAT -->
+  <section class="about-section">
+    <div class="about-card education-card">
+      <div class="about-card-header">
+        <span class="section-icon">🎓</span>
+        <h2>Contexto Educativo</h2>
+      </div>
+      <div class="about-card-body education-body">
+        <div class="education-logo">
+          <img src="/logo idat.png" alt="Instituto IDAT" class="idat-logo">
+        </div>
+        <div class="education-info">
+          <h3>Instituto IDAT</h3>
+          <p class="education-location">📍 Sede Lima Centro</p>
+          <div class="education-details">
+            <div class="detail-item">
+              <span class="detail-label">📚 Curso:</span>
+              <span class="detail-value">Proyecto Integrador 3</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">👨‍🏫 Profesor:</span>
+              <span class="detail-value">Garcia Cruz Benigno</span>
+            </div>
+          </div>
+          <p class="education-description">
+            Este proyecto fue desarrollado como parte del programa académico de IDAT, 
+            demostrando las competencias adquiridas en desarrollo de aplicaciones web.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 2: El Desarrollador -->
+  <section class="about-section">
+    <div class="about-card developer-card">
+      <div class="about-card-header">
+        <span class="section-icon">👨‍💻</span>
+        <h2>El Desarrollador</h2>
+      </div>
+      <div class="about-card-body developer-body">
+        <div class="developer-avatar">
+          <div class="avatar-circle">JC</div>
+        </div>
+        <div class="developer-info">
+          <h3>Richar Joel Cuellar Mucha</h3>
+          <p class="developer-role">Desarrollador Full Stack</p>
+          <div class="developer-details">
+            <div class="detail-item">
+              <span class="detail-label">🎫 Código de Alumno:</span>
+              <span class="detail-value">pt61008535</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">🐙 GitHub:</span>
+              <a href="https://github.com/JoelCm07" target="_blank" class="github-link">
+                github.com/JoelCm07
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 3: Sobre Gloria -->
+  <section class="about-section">
+    <div class="about-card gloria-card">
+      <div class="about-card-header">
+        <span class="section-icon">🥛</span>
+        <h2>Sobre el Proyecto</h2>
+      </div>
+      <div class="about-card-body gloria-body">
+        <div class="gloria-logo-container">
+          <img src="<%= asset_path 'logo_gloria.webp' %>" alt="Gloria" class="gloria-logo-about">
+        </div>
+        <div class="gloria-info">
+          <h3>Gloria - Leche del Perú 🇵🇪</h3>
+          <p class="gloria-description">
+            Este proyecto simula un <strong>e-commerce de productos lácteos</strong> inspirado en 
+            <strong>Gloria S.A.</strong>, una de las empresas más emblemáticas del Perú en el sector lácteo.
+          </p>
+          <p class="gloria-description">
+            Gloria es reconocida por su amplia variedad de productos de calidad que incluyen: 
+            leches, yogurts, quesos, mantequillas, cremas y jugos, llegando a millones de hogares peruanos.
+          </p>
+          <div class="gloria-features">
+            <span class="feature-tag">🥛 Leches</span>
+            <span class="feature-tag">🍦 Yogurts</span>
+            <span class="feature-tag">🧀 Quesos</span>
+            <span class="feature-tag">🧈 Mantequillas</span>
+            <span class="feature-tag">🍊 Jugos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 4: Tecnologías Utilizadas -->
+  <section class="about-section">
+    <div class="about-card tech-card">
+      <div class="about-card-header">
+        <span class="section-icon">⚡</span>
+        <h2>Tecnologías Utilizadas</h2>
+      </div>
+      <div class="about-card-body">
+        <div class="tech-grid">
+          <div class="tech-item">
+            <div class="tech-icon">💎</div>
+            <div class="tech-name">Ruby on Rails 8</div>
+            <div class="tech-desc">Backend & Framework</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">🗄️</div>
+            <div class="tech-name">SQLite</div>
+            <div class="tech-desc">Base de datos</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">⚡</div>
+            <div class="tech-name">Turbo</div>
+            <div class="tech-desc">Actualizaciones AJAX</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">📦</div>
+            <div class="tech-name">Active Storage</div>
+            <div class="tech-desc">Gestión de archivos</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">🎨</div>
+            <div class="tech-name">CSS Vanilla</div>
+            <div class="tech-desc">Estilos personalizados</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-icon">🔐</div>
+            <div class="tech-name">BCrypt</div>
+            <div class="tech-desc">Autenticación segura</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 5: Agradecimientos -->
+  <section class="about-section">
+    <div class="about-card thanks-card">
+      <div class="about-card-header">
+        <span class="section-icon">🙏</span>
+        <h2>Agradecimientos</h2>
+      </div>
+      <div class="about-card-body thanks-body">
+        <div class="thanks-content">
+          <p class="thanks-message">
+            Quiero expresar mi más sincero agradecimiento a los <strong>miembros del jurado</strong> 
+            por tomarse el tiempo de evaluar este proyecto. Su dedicación y experiencia son 
+            fundamentales para nuestro crecimiento como profesionales.
+          </p>
+          <p class="thanks-message">
+            Gracias también al <strong>Profesor Garcia Cruz Benigno</strong> por su guía y enseñanzas 
+            durante el curso de Proyecto Integrador 3, y al <strong>Instituto IDAT</strong> por brindarnos 
+            las herramientas y el conocimiento necesario para desarrollar este proyecto.
+          </p>
+          <div class="thanks-signature">
+            <p>Con gratitud,</p>
+            <p class="signature-name">Richar Joel Cuellar Mucha</p>
+            <p class="signature-date">Lima, <%= Date.current.year %></p>
+          </div>
+        </div>
+        <div class="thanks-decoration">
+          🌟 ¡Gracias por su atención! 🌟
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Botón volver -->
+  <div class="about-footer">
+    <a href="<%= root_path %>" class="btn btn-primary">🏠 Volver a la Tienda</a>
+  </div>
+</div>
+
+<style>
+
+
+  .about-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem 0 3rem 0;
+  }
+
+  .about-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .about-title {
+    font-size: 2.5rem;
+    color: var(--gloria-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .about-subtitle {
+    color: #666;
+    font-size: 1.2rem;
+  }
+
+  .about-section {
+    margin-bottom: 2rem;
+  }
+
+  .about-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .about-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .about-card-header {
+    background: linear-gradient(135deg, var(--gloria-primary), #1a5a7a);
+    color: #001F3F;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .about-card-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  .section-icon {
+    font-size: 1.6rem;
+  }
+
+  .about-card-body {
+    padding: 2rem;
+    color: #1a3a5c;
+  }
+
+  .about-card-body h3 {
+    color: #1a3a5c !important;
+  }
+
+  .about-card-body p {
+    color: #333 !important;
+  }
+
+  /* Sección Educación */
+  .education-body {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .education-logo {
+    flex-shrink: 0;
+  }
+
+  .idat-logo {
+    width: 150px;
+    height: auto;
+    border-radius: 12px;
+  }
+
+  .education-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: #1a3a5c !important;
+    font-size: 1.5rem;
+  }
+
+  .education-location {
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .education-details {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .detail-item {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .detail-label {
+    font-weight: bold;
+    color: #555;
+  }
+
+  .detail-value {
+    color: var(--gloria-primary);
+    font-weight: 600;
+  }
+
+  .education-description {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Sección Desarrollador */
+  .developer-body {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .avatar-circle {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #6B4EAF, #9B7ED9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+  }
+
+  .developer-info h3 {
+    margin: 0 0 0.25rem 0;
+    color: #1a3a5c !important;
+    font-size: 1.4rem;
+  }
+
+  .developer-role {
+    color: #6B4EAF;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .developer-details {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .github-link {
+    color: #1a3a5c;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .github-link:hover {
+    text-decoration: underline;
+    color: #0d2840;
+  }
+
+  /* Sección Gloria */
+  .gloria-body {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  .gloria-logo-container {
+    flex-shrink: 0;
+  }
+
+  .gloria-logo-about {
+    width: 120px;
+    height: auto;
+  }
+
+  .gloria-info h3 {
+    margin: 0 0 1rem 0;
+    color: #1a3a5c !important;
+    font-size: 1.4rem;
+  }
+
+  .gloria-description {
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .gloria-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .feature-tag {
+    background: linear-gradient(135deg, #e8f4fd, #d4ecf9);
+    color: var(--gloria-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  /* Sección Tecnologías */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .tech-item {
+    background: linear-gradient(135deg, #1a2a3a, #2d3e50);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.2s ease;
+  }
+
+  .tech-item:hover {
+    transform: scale(1.05);
+  }
+
+  .tech-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tech-name {
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .tech-desc {
+    color: #8899aa;
+    font-size: 0.85rem;
+  }
+
+  /* Sección Agradecimientos */
+  .thanks-body {
+    text-align: center;
+  }
+
+  .thanks-content {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .thanks-message {
+    color: #555;
+    line-height: 1.8;
+    font-size: 1.05rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .thanks-signature {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #eee;
+  }
+
+  .thanks-signature p {
+    margin: 0.25rem 0;
+    color: #666;
+  }
+
+  .signature-name {
+    font-weight: bold;
+    color: var(--gloria-primary) !important;
+    font-size: 1.1rem;
+  }
+
+  .signature-date {
+    font-style: italic;
+  }
+
+  .thanks-decoration {
+    margin-top: 2rem;
+    font-size: 1.3rem;
+    color: #f0a500;
+  }
+
+  /* Footer */
+  .about-footer {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .education-body,
+    .developer-body,
+    .gloria-body {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .education-logo,
+    .developer-avatar,
+    .gloria-logo-container {
+      margin: 0 auto;
+    }
+
+    .tech-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .detail-item {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .tech-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .about-title {
+      font-size: 2rem;
+    }
+  }
+</style>

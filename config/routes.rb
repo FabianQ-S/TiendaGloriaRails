@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   root "store#index"
   get "tienda", to: "store#index", as: :store
   get "producto/:id", to: "store#show", as: :store_product
+  get "sobre-nosotros", to: "pages#about", as: :about
 
   # Carrito
   get "carrito", to: "carts#show", as: :cart

@@ -37,6 +37,12 @@
           </li>
           
           <li>
+            <a href="<%= about_path %>" class="nav-link <%= 'active' if controller_name == 'pages' && action_name == 'about' %>">
+              📖 Sobre Nosotros
+            </a>
+          </li>
+          
+          <li>
             <a href="<%= cart_path %>" class="nav-link <%= 'active' if controller_name == 'carts' %>">
               🛒 Carrito
               <% if cart_count > 0 %>
